@@ -14,12 +14,16 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      ukuran: { 
+        type: Sequelize.STRING, // Contoh isi: 'Regular', 'Large', atau dibiarkan kosong (NULL)
+        allowNull: true, // WAJIB true, karena ada menu yang tidak punya ukuran (contoh: Burger, Es Krim)
+      },
       harga: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
       kategori: { 
-        type: Sequelize.ENUM("sarapan pagi", "daging sapi", "ayam", "minuman", "makanan penutup", "happy meal", "camilan"), // MASIH HARUS DIPIKIRIN LAGI KARENA KEBANYAKAN
+        type: Sequelize.ENUM("ayam", "burger", "minuman"),
         allowNull: false,
       },
       gambar: { 
@@ -29,6 +33,14 @@ module.exports = {
       stok: {
         type: Sequelize.INTEGER,
         allowNull: true
+      },
+      createdAt: { // Ingat, gunakan camelCase agar tidak bentrok dengan bawaan Sequelize
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
       }
     });
   },

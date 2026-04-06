@@ -3,8 +3,8 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("user", {
-      user_id: {
+    await queryInterface.createTable("admin", {
+      admin_id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
@@ -24,12 +24,22 @@ module.exports = {
         allowNull: false,
       },
       role: {
-        type: Sequelize.ENUM("customer", "staff")
+        type: Sequelize.ENUM("staff", "kasir"),
+        defaultValue: "staff",
+        allowNull: false
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
       }
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("user");
+    await queryInterface.dropTable("admin");
   },
 };

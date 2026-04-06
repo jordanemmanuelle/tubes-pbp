@@ -1,48 +1,35 @@
-"use strict";
-
-/** @type {import('sequelize-cli').Migration} */
+'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("transaksi", {
+    await queryInterface.createTable('transaksi', {
       transaksi_id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-        allowNull: false,
         primaryKey: true,
       },
-      user_id: {
-        type: Sequelize.UUID,
+      nomor_meja: {
+        type: Sequelize.STRING, 
+        allowNull: false, // Akan diisi otomatis oleh sistem
+      },
+      tipe_pesanan: {
+        type: Sequelize.ENUM('dine-in', 'takeaway'),
+        defaultValue: 'dine-in',
+        allowNull: false
+      },
+      status: {
+        type: Sequelize.ENUM('pending', 'diproses', 'selesai'),
+        defaultValue: 'pending',
         allowNull: false,
-        references: { model: "user", key: "user_id" },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
       },
       total_harga: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 0
       },
-      status: { 
-        type: Sequelize.ENUM("pending", "berhasil", "gagal"),
-        defaultValue: "pending",
-        allowNull: false,
-      },
-      payment_method: {
-        type: Sequelize.STRING,
-        allowNull: true // Bisa diisi 'Gopay', 'BCA', 'Credit Card' nanti
-      },
-      created_at: {
-        type: Sequelize.DATE,
-        allowNull: false
-      },
-      updated_at: {
-        type: Sequelize.DATE,
-        allowNull: false
-      }
+      createdAt: { allowNull: false, type: Sequelize.DATE },
+      updatedAt: { allowNull: false, type: Sequelize.DATE }
     });
   },
-
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("transaksi");
-  },
+    await queryInterface.dropTable('transaksi');
+  }
 };
