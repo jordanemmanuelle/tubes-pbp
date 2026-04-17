@@ -22,9 +22,12 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      kategori: { 
-        type: Sequelize.ENUM("ayam", "burger", "minuman"),
+      kategori_id: {
+        type: Sequelize.UUID,
         allowNull: false,
+        references: { model: "kategori", key: "kategori_id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT" // mencegah kategori dihapus jika masih ada menunya
       },
       gambar: { 
         type: Sequelize.STRING,
