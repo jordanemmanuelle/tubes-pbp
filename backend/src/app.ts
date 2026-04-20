@@ -15,7 +15,6 @@ const PORT = 5000;
 app.use(cors());
 app.use(express.json()); // Agar backend bisa menerima data JSON dari frontend
 
-// 2. Daftarkan Routes (Pintu masuk API)
 app.use('/api/kategori', kategoriRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/admin', adminRoutes);
