@@ -1,7 +1,7 @@
 // CARA INPUT DI POSTMAN
 // BUAT REGISTER
 // { 
-//    "nama": "Kasir Satu",
+//    "nama": "Kasir 1",
 //    "email": "kasir@gmail.com",
 //    "password": "123",
 //    "role": "kasir"
