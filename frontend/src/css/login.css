@@ -1,0 +1,79 @@
+/* Reset dasar */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Container full screen */
+.container {
+  height: 100vh;
+  background: linear-gradient(135deg, #d62828, #fcbf49);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Box login */
+.login-box {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Logo */
+.logo {
+  color: #d62828;
+  margin-bottom: 25px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+/* Input */
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+/* Focus input */
+.login-box input:focus {
+  border-color: #fcbf49;
+  outline: none;
+  box-shadow: 0 0 5px rgba(252, 191, 73, 0.5);
+}
+
+/* Button */
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  background: #d62828;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Hover button */
+.login-box button:hover {
+  background: #a61e1e;
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+  .login-box {
+    width: 90%;
+    padding: 30px;
+  }
+}
