@@ -1,14 +1,8 @@
-import {
-  Table,
-  Column,
-  Model,
-  DataType,
-  PrimaryKey,
-} from "sequelize-typescript";
+import { Table, Column, Model, DataType, PrimaryKey } from "sequelize-typescript";
 
 @Table({
   tableName: "admin",
-  timestamps: true, // Otomatis mengurus createdAt dan updatedAt
+  timestamps: true,
 })
 export class Admin extends Model {
   @PrimaryKey
@@ -27,7 +21,7 @@ export class Admin extends Model {
   @Column({
     type: DataType.STRING,
     allowNull: false,
-    unique: true, // Email tidak boleh ada yang sama
+    unique: true, // Email tidak boleh sama
   })
   declare email: string;
 
@@ -44,6 +38,7 @@ export class Admin extends Model {
   })
   declare role: string;
 
+  // Persiapan untuk fitur Forget Password nanti
   @Column({
     type: DataType.STRING,
     allowNull: true,
@@ -55,14 +50,4 @@ export class Admin extends Model {
     allowNull: true,
   })
   declare reset_token_expires: Date | null;
-
-  @Column({
-    type: DataType.DATE,
-  })
-  declare createdAt: Date;
-
-  @Column({
-    type: DataType.DATE,
-  })
-  declare updatedAt: Date;
 }

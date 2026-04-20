@@ -1,3 +1,8 @@
+// CARA INPUT DI POSTMAN
+// {
+//    "nama_kategori": "blablabla"
+// }
+
 import { Request, Response } from 'express';
 import { Kategori } from '../models/kategori';
 

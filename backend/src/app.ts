@@ -6,6 +6,7 @@ import cors from 'cors';
 import sequelize from './config/database'; 
 import kategoriRoutes from './routes/kategori-routes'; 
 import menuRoutes from './routes/menu-routes';
+import adminRoutes from './routes/admin-routes';
 
 const app = express();
 const PORT = 5000;
@@ -17,6 +18,7 @@ app.use(express.json()); // Agar backend bisa menerima data JSON dari frontend
 // 2. Daftarkan Routes (Pintu masuk API)
 app.use('/api/kategori', kategoriRoutes);
 app.use('/api/menu', menuRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Endpoint Testing Bawaan
 app.get('/', (req: Request, res: Response) => {

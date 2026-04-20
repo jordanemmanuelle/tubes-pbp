@@ -1,3 +1,14 @@
+// CARA INPUT DI POSTMAN
+// BUAT REGISTER
+// { 
+//    "nama": "Fanta",
+//    "ukuran": "Regular",
+//    "harga": "15000",
+//    "kategori_id": "paste uuid kategori'minuman'",
+//    "gambar": "link-gambar.png",
+//    "stok": 50
+// }
+
 import { Request, Response } from 'express';
 import { Menu } from '../models/menu';
 import { Kategori } from '../models/kategori';
