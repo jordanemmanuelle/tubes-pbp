@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../css/login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
@@ -24,14 +26,18 @@ export default function Login() {
 
       if (data.sukses) {
         alert(data.pesan);
+
+        // simpan ke localStorage
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.data));
+
         console.log(data);
-        window.location.href = "/home";
+
+        // pindah ke home TANPA reload
+        navigate("/home");
       } else {
         alert(data.pesan);
       }
-
     } catch (err: any) {
       alert("Terjadi error saat login!");
       console.error(err);
