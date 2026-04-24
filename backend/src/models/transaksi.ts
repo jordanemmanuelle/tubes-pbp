@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType, PrimaryKey, HasMany } from "sequelize-typescript";
-import { ItemTransaksi } from "./item-transaksi"; // Nanti kita buat filenya di bawah
+import { ItemTransaksi } from "./item-transaksi"; // Pastikan nama filenya benar
 
 @Table({
   tableName: "transaksi",
@@ -15,9 +15,16 @@ export class Transaksi extends Model {
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
+    defaultValue: "Guest"
   })
-  declare nomor_meja: string;
+  declare nama_pelanggan: string;
+
+  @Column({
+    type: DataType.INTEGER, 
+    allowNull: true,
+  })
+  declare nomor_meja: number;
 
   @Column({
     type: DataType.ENUM("dine-in", "takeaway"),
@@ -45,7 +52,6 @@ export class Transaksi extends Model {
   @Column({ type: DataType.DATE })
   declare updatedAt: Date;
 
-  // Relasi: 1 Transaksi punya BANYAK Item Transaksi
-  @HasMany(() => ItemTransaksi)
+  @HasMany(() => ItemTransaksi, 'transaksi_id')
   declare items: ItemTransaksi[];
 }

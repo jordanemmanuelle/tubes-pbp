@@ -1,9 +1,9 @@
 import { Table, Column, Model, DataType, PrimaryKey, ForeignKey, BelongsTo } from "sequelize-typescript";
-import { Transaksi } from "./transaksi";
+import { Transaksi } from "./transaksi"; // Pastikan huruf besar/kecil sesuai nama file kamu
 import { Menu } from "./menu";
 
 @Table({
-  tableName: "item_transaksi",
+  tableName: "item_transaksi", // Pastikan nama tabel ini sesuai dengan di PostgreSQL kamu
   timestamps: true,
 })
 export class ItemTransaksi extends Model {
@@ -12,9 +12,9 @@ export class ItemTransaksi extends Model {
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
   })
-  declare item_transaksi_id: string;
+  declare id: string;
 
-  // Memberi tahu bahwa ini adalah Foreign Key ke tabel Transaksi
+  // 1. Foreign Key ke tabel Transaksi
   @ForeignKey(() => Transaksi)
   @Column({
     type: DataType.UUID,
@@ -22,10 +22,10 @@ export class ItemTransaksi extends Model {
   })
   declare transaksi_id: string;
 
-  // Memberi tahu bahwa ini adalah Foreign Key ke tabel Menu
+  // 2. Foreign Key ke tabel Menu
   @ForeignKey(() => Menu)
   @Column({
-    type: DataType.UUID,
+    type: DataType.UUID, // ATAU INTEGER, sesuaikan dengan tipe Primary Key di tabel Menu kamu!
     allowNull: false,
   })
   declare menu_id: string;
@@ -33,7 +33,6 @@ export class ItemTransaksi extends Model {
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
-    defaultValue: 1,
   })
   declare kuantitas: number;
 
@@ -41,18 +40,15 @@ export class ItemTransaksi extends Model {
     type: DataType.INTEGER,
     allowNull: false,
   })
-  declare harga_saat_transaksi: number;
+  declare harga_satuan: number;
 
-  @Column({ type: DataType.DATE })
-  declare createdAt: Date;
+  // --- RELASI BALIK ---
 
-  @Column({ type: DataType.DATE })
-  declare updatedAt: Date;
-
-  // Jembatan untuk mengambil data Menu & Transaksi secara utuh nanti
-  @BelongsTo(() => Transaksi)
+  // Relasi balik ke Transaksi (Anak melapor ke Bapak)
+  @BelongsTo(() => Transaksi, 'transaksi_id')
   declare transaksi: Transaksi;
 
-  @BelongsTo(() => Menu)
+  // Relasi ke Menu (Agar kita bisa tahu pesanan ini makanan apa)
+  @BelongsTo(() => Menu, 'menu_id')
   declare menu: Menu;
 }
