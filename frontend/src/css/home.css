@@ -1,21 +1,23 @@
 .home-container {
-  min-height: 100vh; /* 🔥 penting */
+  min-height: 100vh;
   width: 100%;
   padding: 20px;
   background-color: #ffffff;
 }
 
-.title {
-  text-align: center;
-  color: #d32f2f;
+.logo-mcd {
+  width: 150px;
+  display: block;
+  margin: 0 auto 20px;
 }
 
-/* 🔥 KATEGORI */
+/* KATEGORI */
 .kategori-container {
   display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 10px;
-  overflow-x: auto;
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 
 .kategori-btn {
@@ -36,13 +38,15 @@
   color: white;
 }
 
-/* 🔥 MENU GRID */
+/* MENU GRID */
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(4, 180px);
+  gap: 20px;
+  justify-content: center;
 }
 
+/* 🔥 CARD FIX */
 .menu-card {
   background: #ffffff;
   border-radius: 10px;
@@ -50,14 +54,25 @@
   text-align: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transition: 0.2s;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .menu-card:hover {
   transform: scale(1.03);
 }
 
+/* 🔥 BIAR TOMBOL KE BAWAH */
+.menu-content {
+  flex-grow: 1;
+}
+
 .menu-img {
-  font-size: 40px;
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
   margin-bottom: 10px;
 }
 
@@ -80,6 +95,7 @@
   padding: 15px;
   background: #f9f9f9;
   border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .qty-control {
@@ -101,4 +117,21 @@
 
 .qty-control span {
   font-weight: bold;
+}
+
+.admin-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 8px 15px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.admin-btn:hover {
+  background: #b71c1c;
 }

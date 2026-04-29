@@ -27,14 +27,12 @@ export default function Login() {
       if (data.sukses) {
         alert(data.pesan);
 
-        // simpan ke localStorage
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.data));
 
         console.log(data);
 
-        // pindah ke home TANPA reload
-        navigate("/home");
+        navigate("/admin");
       } else {
         alert(data.pesan);
       }
@@ -47,7 +45,7 @@ export default function Login() {
   return (
     <div className="container">
       <div className="login-box">
-        <h1 className="logo">McDonald's</h1>
+        <img src="/images/logo_mcd.jpg" alt="McD Logo" className="logo-mcd" />
 
         <form onSubmit={handleLogin}>
           <input
