@@ -7,9 +7,15 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
+      // DITAMBAHKAN: Agar tidak error "column does not exist"
+      nama_pelanggan: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        defaultValue: 'Guest'
+      },
       nomor_meja: {
         type: Sequelize.STRING, 
-        allowNull: false, // Akan diisi otomatis oleh sistem
+        allowNull: true, // DIPERBAIKI: Boleh kosong agar takeaway tidak error
       },
       tipe_pesanan: {
         type: Sequelize.ENUM('dine-in', 'takeaway'),
