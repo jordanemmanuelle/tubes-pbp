@@ -9,6 +9,10 @@ export default function Home() {
   const [menu, setMenu] = useState<any[]>([]);
   const [cart, setCart] = useState<{ [key: string]: number }>({});
 
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [step, setStep] = useState<"pilih" | "meja">("pilih");
+  const [nomorMeja, setNomorMeja] = useState("");
+
   const API = "http://localhost:5000/api/menu";
 
   const fetchMenu = async () => {
@@ -61,18 +65,58 @@ export default function Home() {
     });
   };
 
+  // checkout
+  const handleCheckout = async (tipe: string) => {
+    if (tipe === "meja" && !nomorMeja) {
+      alert("Masukkan nomor meja!");
+      return;
+    }
+
+    try {
+      const data = {
+        metode: tipe,
+        nomor_meja: tipe === "meja" ? parseInt(nomorMeja) : null,
+        items: Object.entries(cart).map(([nama, jumlah]) => ({
+          nama,
+          jumlah,
+        })),
+      };
+
+      const res = await fetch("http://localhost:5000/api/transaksi", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        alert("Transaksi berhasil!");
+        setCart({});
+        setShowCheckout(false);
+        setStep("pilih");
+        setNomorMeja("");
+        navigate("/transaksi");
+      } else {
+        alert(result.pesan || "Gagal transaksi");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error server");
+    }
+  };
+
   return (
     <div className="home-container">
 
-      {/* BUTTON ADMIN */}
-      <button 
-        className="admin-btn"
-        onClick={() => navigate("/login")}
-      >
+      {/* ADMIN */}
+      <button className="admin-btn" onClick={() => navigate("/login")}>
         Admin
       </button>
 
-      <img src="/images/logo_mcd.jpg" alt="McD Logo" className="logo-mcd" />
+      <img src="/images/logo_mcd.jpg" className="logo-mcd" />
 
       {/* KATEGORI */}
       <div className="kategori-container">
@@ -121,16 +165,95 @@ export default function Home() {
       {/* CART */}
       <div className="cart">
         <h2>Keranjang 🛒</h2>
+
         {Object.keys(cart).length === 0 ? (
           <p>Kosong</p>
         ) : (
-          Object.entries(cart).map(([nama, jumlah], index) => (
-            <p key={index}>
-              {nama} x{jumlah}
-            </p>
-          ))
+          <>
+            {Object.entries(cart).map(([nama, jumlah], index) => (
+              <p key={index}>
+                {nama} x{jumlah}
+              </p>
+            ))}
+
+            <button
+              className="checkout-btn"
+              onClick={() => {
+                setShowCheckout(true);
+                setStep("pilih");
+              }}
+            >
+              Checkout
+            </button>
+          </>
         )}
       </div>
+
+      {showCheckout && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Checkout</h3>
+
+            {/* PILIH METODE */}
+            {step === "pilih" && (
+              <>
+                <div className="metode-container">
+
+                  <div
+                    className="metode-card"
+                    onClick={() => setStep("meja")}
+                  >
+                    <img src="/images/AntarKeMeja.png" />
+                    <p>Diantar ke Meja</p>
+                  </div>
+
+                  <div
+                    className="metode-card"
+                    onClick={() => handleCheckout("counter")}
+                  >
+                    <img src="/images/Counter.png" />
+                    <p>Ambil di Counter</p>
+                  </div>
+                </div>
+
+                <button
+                  className="cancel-btn"
+                  onClick={() => setShowCheckout(false)}
+                >
+                  Batal
+                </button>
+              </>
+            )}
+
+            {/* INPUT MEJA */}
+            {step === "meja" && (
+              <>
+                <input
+                  type="number"
+                  placeholder="Nomor Meja"
+                  value={nomorMeja}
+                  onChange={(e) => setNomorMeja(e.target.value)}
+                />
+
+                <button
+                  className="confirm-btn"
+                  onClick={() => handleCheckout("meja")}
+                >
+                  Konfirmasi
+                </button>
+
+                <button
+                  className="back-btn"
+                  onClick={() => setStep("pilih")}
+                >
+                  Kembali
+                </button>
+              </>
+            )}
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }

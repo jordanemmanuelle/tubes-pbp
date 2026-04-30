@@ -64,14 +64,7 @@ export class Promo extends Model {
 
   @Column({
     type: DataType.BOOLEAN,
-    allowNull: false,
     defaultValue: true,
   })
   declare is_active: boolean;
-
-  @Column({ type: DataType.DATE })
-  declare createdAt: Date;
-
-  @Column({ type: DataType.DATE })
-  declare updatedAt: Date;
 }

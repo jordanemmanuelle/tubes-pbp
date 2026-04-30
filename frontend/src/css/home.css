@@ -3,6 +3,7 @@
   width: 100%;
   padding: 20px;
   background-color: #ffffff;
+  position: relative;
 }
 
 .logo-mcd {
@@ -46,27 +47,22 @@
   justify-content: center;
 }
 
-/* 🔥 CARD FIX */
+/* CARD */
 .menu-card {
   background: #ffffff;
   border-radius: 10px;
   padding: 15px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: 0.2s;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: 0.2s;
 }
 
 .menu-card:hover {
-  transform: scale(1.03);
-}
-
-/* 🔥 BIAR TOMBOL KE BAWAH */
-.menu-content {
-  flex-grow: 1;
+  transform: translateY(-3px);
 }
 
 .menu-img {
@@ -90,6 +86,7 @@
   background: #ffb300;
 }
 
+/* CART */
 .cart {
   margin-top: 30px;
   padding: 15px;
@@ -98,6 +95,7 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
+/* QTY */
 .qty-control {
   display: flex;
   justify-content: center;
@@ -119,6 +117,7 @@
   font-weight: bold;
 }
 
+/* ADMIN */
 .admin-btn {
   position: absolute;
   top: 20px;
@@ -134,4 +133,135 @@
 
 .admin-btn:hover {
   background: #b71c1c;
+}
+
+/* CHECKOUT */
+.checkout-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.checkout-btn:hover {
+  background: #b71c1c;
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* MODAL BOX */
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 340px;
+  text-align: center;
+}
+
+/* METODE */
+.metode-container {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.metode-card {
+  flex: 1;
+  cursor: pointer;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  transition: 0.2s;
+}
+
+.metode-card:hover {
+  transform: scale(1.05);
+  background: #eee;
+}
+
+.metode-card img {
+  width: 100%;
+  height: 90px;
+  object-fit: contain;
+}
+
+.metode-card p {
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+/* INPUT */
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+/* BUTTONS */
+.confirm-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background: #ffcc00;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.confirm-btn:hover {
+  background: #ffb300;
+}
+
+.back-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background: #777;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background: #555;
+}
+
+.cancel-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.cancel-btn:hover {
+  background: #cfcfcf;
 }

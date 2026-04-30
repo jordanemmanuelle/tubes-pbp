@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../css/admin.css";
 
 export default function Admin() {
+  const navigate = useNavigate();
+  const [tab, setTab] = useState<"menu" | "promo" | "transaksi">("menu");
+  const [kategoriAktif, setKategoriAktif] = useState("Semua");
+
   const [menu, setMenu] = useState<any[]>([]);
   const [form, setForm] = useState({
     nama_menu: "",
@@ -16,7 +21,25 @@ export default function Admin() {
 
   const API = "http://localhost:5000/api/menu";
 
-  // GET MENU
+  const [promo, setPromo] = useState<any[]>([]);
+  const [editPromoId, setEditPromoId] = useState<string | null>(null);
+  const token = localStorage.getItem("token");
+  console.log("TOKEN:", token);
+
+  const [formPromo, setFormPromo] = useState({
+    kode_promo: "",
+    nilai_promo: "",
+    minimal_belanja: "",
+    maksimal_diskon: "",
+    stok: "",
+    tanggal_mulai: "",
+    tanggal_berakhir: "",
+    deskripsi: "",
+    is_active: true,
+  });
+
+  const API_PROMO = "http://localhost:5000/api/promo";
+
   const fetchMenu = async () => {
     try {
       const res = await fetch(API);
@@ -27,76 +50,68 @@ export default function Admin() {
     }
   };
 
+  const fetchPromo = async () => {
+    try {
+      const res = await fetch(API_PROMO, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      setPromo(data?.data || []);
+    } catch (err) {
+      console.error(err);
+      setPromo([]);
+    }
+  };
+
   useEffect(() => {
     fetchMenu();
+    fetchPromo();
   }, []);
 
-  // HANDLE INPUT
   const handleChange = (e: any) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ADD / UPDATE
   const handleSubmit = async (e: any) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const payload: any = {
-    nama_menu: form.nama_menu,
-    harga: Number(form.harga),
-    kategori_id: form.kategori_id,
-    gambar: form.gambar,
-    stok: Number(form.stok),
-  };
+    const payload: any = {
+      nama_menu: form.nama_menu,
+      harga: Number(form.harga),
+      kategori_id: form.kategori_id,
+      gambar: form.gambar,
+      stok: Number(form.stok),
+    };
 
-  if (form.ukuran && form.ukuran.trim() !== "") {
-    payload.ukuran = form.ukuran;
-  }
-
-  try {
-    if (editId) {
-      await fetch(`${API}/${editId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-    } else {
-      await fetch(API, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-    }
-
-    setForm({
-      nama_menu: "",
-      harga: "",
-      kategori_id: "",
-      gambar: "",
-      stok: "",
-      ukuran: "",
-    });
-
-    setEditId(null);
-    fetchMenu();
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Yakin mau hapus?")) return;
+    if (form.ukuran) payload.ukuran = form.ukuran;
 
     try {
-      await fetch(`${API}/${id}`, {
-        method: "DELETE",
+      if (editId) {
+        await fetch(`${API}/${editId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
+
+      setForm({
+        nama_menu: "",
+        harga: "",
+        kategori_id: "",
+        gambar: "",
+        stok: "",
+        ukuran: "",
       });
+
+      setEditId(null);
       fetchMenu();
     } catch (err) {
       console.error(err);
@@ -112,84 +127,216 @@ export default function Admin() {
       stok: item.stok,
       ukuran: item.ukuran || "",
     });
+
     setEditId(item.menu_id);
+    setTab("menu");
   };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Yakin mau hapus?")) return;
+    await fetch(`${API}/${id}`, { method: "DELETE" });
+    fetchMenu();
+  };
+
+  const handleChangePromo = (e: any) => {
+    setFormPromo({ ...formPromo, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmitPromo = async (e: any) => {
+    e.preventDefault();
+
+    const payload = {
+      kode_promo: formPromo.kode_promo,
+      nilai_promo: Number(formPromo.nilai_promo),
+      minimal_belanja: Number(formPromo.minimal_belanja),
+      maksimal_diskon: formPromo.maksimal_diskon
+        ? Number(formPromo.maksimal_diskon)
+        : null,
+      stok: formPromo.stok ? Number(formPromo.stok) : null,
+      tanggal_mulai: formPromo.tanggal_mulai,
+      tanggal_berakhir: formPromo.tanggal_berakhir,
+      deskripsi: formPromo.deskripsi,
+      is_active: formPromo.is_active,
+    };
+
+    try {
+      if (editPromoId) {
+        await fetch(`${API_PROMO}/${editPromoId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        await fetch(API_PROMO, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // 👈 INI WAJIB
+          },
+          body: JSON.stringify(payload),
+        });
+      }
+
+      setFormPromo({
+        kode_promo: "",
+        nilai_promo: "",
+        minimal_belanja: "",
+        maksimal_diskon: "",
+        stok: "",
+        tanggal_mulai: "",
+        tanggal_berakhir: "",
+        deskripsi: "",
+        is_active: true,
+      });
+
+      setEditPromoId(null);
+      fetchPromo();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleEditPromo = (item: any) => {
+    setFormPromo({
+      kode_promo: item.kode_promo,
+      nilai_promo: item.nilai_promo,
+      minimal_belanja: item.minimal_belanja,
+      maksimal_diskon: item.maksimal_diskon,
+      stok: item.stok,
+      tanggal_mulai: item.tanggal_mulai,
+      tanggal_berakhir: item.tanggal_berakhir,
+      deskripsi: item.deskripsi,
+      is_active: item.is_active,
+    });
+
+    setEditPromoId(item.promo_id);
+    setTab("promo");
+  };
+
+  const handleDeletePromo = async (id: string) => {
+    if (!confirm("Yakin mau hapus promo?")) return;
+    await fetch(`${API_PROMO}/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    fetchPromo();
+  };
+
+  // KATEGORI FILTER
+  const kategoriList = [
+    "Semua",
+    ...new Set(menu.map((m) => m.kategori?.nama_kategori)),
+  ];
+
+  const filteredMenu =
+    kategoriAktif === "Semua"
+      ? menu
+      : menu.filter((item) => item.kategori?.nama_kategori === kategoriAktif);
 
   return (
     <div className="admin-container">
-      <h1>Admin Menu</h1>
 
-      {/* FORM */}
-      <form onSubmit={handleSubmit} className="admin-form">
-        <input
-          name="nama_menu"
-          placeholder="Nama Menu"
-          value={form.nama_menu}
-          onChange={handleChange}
-          required
-        />
+      <button className="admin-btn" onClick={() => navigate("/home")}>
+        Home
+      </button>
 
-        <input
-          name="harga"
-          placeholder="Harga"
-          value={form.harga}
-          onChange={handleChange}
-          required
-        />
+      <img src="/images/logo_mcd.jpg" className="logo-mcd" />
 
-        <input
-          name="kategori_id"
-          placeholder="Kategori ID"
-          value={form.kategori_id}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          name="gambar"
-          placeholder="Link Gambar"
-          value={form.gambar}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          name="stok"
-          placeholder="Stok"
-          value={form.stok}
-          onChange={handleChange}
-        />
-
-        {/* ✅ OPTIONAL */}
-        <input
-          name="ukuran"
-          placeholder="Ukuran (S/M/L)"
-          value={form.ukuran}
-          onChange={handleChange}
-        />
-
-        <button type="submit">
-          {editId ? "Update Menu" : "Tambah Menu"}
-        </button>
-      </form>
-
-      {/* LIST MENU */}
-      <div className="menu-list">
-        {menu.map((item) => (
-          <div key={item.menu_id} className="menu-item">
-            <img src={item.gambar} alt={item.nama_menu} width="80" />
-            <h3>{item.nama_menu}</h3>
-            <p>Rp {item.harga}</p>
-            <p>Stok: {item.stok}</p>
-            {item.ukuran && <p>Ukuran: {item.ukuran}</p>}
-
-            <button onClick={() => handleEdit(item)}>Edit</button>
-            <button onClick={() => handleDelete(item.menu_id)}>
-              Hapus
-            </button>
-          </div>
-        ))}
+      {/* TAB */}
+      <div className="admin-tabs">
+        <button className={tab === "menu" ? "active" : ""} onClick={() => setTab("menu")}>Menu</button>
+        <button className={tab === "promo" ? "active" : ""} onClick={() => setTab("promo")}>Promo</button>
+        <button className={tab === "transaksi" ? "active" : ""} onClick={() => setTab("transaksi")}>Transaksi</button>
       </div>
+
+      {/* MENU */}
+      {tab === "menu" && (
+        <>
+          <h2>Add & Edit Menu</h2>
+
+          <form onSubmit={handleSubmit} className="admin-form">
+            <input name="nama_menu" placeholder="Nama Menu" value={form.nama_menu} onChange={handleChange} />
+            <input name="harga" placeholder="Harga" value={form.harga} onChange={handleChange} />
+            <input name="kategori_id" placeholder="Kategori ID" value={form.kategori_id} onChange={handleChange} />
+            <input name="gambar" placeholder="Link Gambar" value={form.gambar} onChange={handleChange} />
+            <input name="stok" placeholder="Stok" value={form.stok} onChange={handleChange} />
+            <input name="ukuran" placeholder="Ukuran (optional)" value={form.ukuran} onChange={handleChange} />
+
+            <button type="submit">{editId ? "Update" : "Tambah"}</button>
+          </form>
+          <br />
+          {/* KATEGORI */}
+          <div className="admin-tabs">
+            {kategoriList.map((kat, i) => (
+              <button
+                key={i}
+                className={kategoriAktif === kat ? "active" : ""}
+                onClick={() => setKategoriAktif(kat)}
+              >
+                {kat}
+              </button>
+            ))}
+          </div>
+
+          <div className="menu-list">
+            {filteredMenu.map((item) => (
+              <div key={item.menu_id} className="menu-item">
+                <img src={item.gambar} width="80" />
+                <h3>{item.nama_menu}</h3>
+                <p>Rp {item.harga}</p>
+
+                <button onClick={() => handleEdit(item)}>Edit</button>
+                <button onClick={() => handleDelete(item.menu_id)}>Hapus</button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* PROMO */}
+      {tab === "promo" && (
+        <>
+          <h2>Promo</h2>
+
+          <form onSubmit={handleSubmitPromo} className="admin-form">
+            <input name="kode_promo" placeholder="Kode Promo" value={formPromo.kode_promo} onChange={handleChangePromo} />
+            <input name="nilai_promo" placeholder="Nilai Promo" value={formPromo.nilai_promo} onChange={handleChangePromo} />
+            <input name="minimal_belanja" placeholder="Minimal Belanja" value={formPromo.minimal_belanja} onChange={handleChangePromo} />
+            <input name="maksimal_diskon" placeholder="Maks Diskon" value={formPromo.maksimal_diskon} onChange={handleChangePromo} />
+            <input name="stok" placeholder="Stok" value={formPromo.stok} onChange={handleChangePromo} />
+            <input name="tanggal_mulai" type="date" value={formPromo.tanggal_mulai} onChange={handleChangePromo} />
+            <input name="tanggal_berakhir" type="date" value={formPromo.tanggal_berakhir} onChange={handleChangePromo} />
+            <input name="deskripsi" placeholder="Deskripsi" value={formPromo.deskripsi} onChange={handleChangePromo} />
+
+            <button type="submit">{editPromoId ? "Update" : "Tambah"}</button>
+          </form>
+
+          <div className="menu-list">
+            {(promo || []).map((item) => (
+              <div key={item.promo_id} className="menu-item">
+                <h3>{item.kode_promo}</h3>
+                <p>{item.nilai_promo}</p>
+
+                <button onClick={() => handleEditPromo(item)}>Edit</button>
+                <button onClick={() => handleDeletePromo(item.promo_id)}>Hapus</button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* TRANSAKSI */}
+      {tab === "transaksi" && (
+        <div className="placeholder">
+          <h1>Transaksi</h1>
+          <p>List pesanan & transaksi nanti di sini</p>
+        </div>
+      )}
     </div>
   );
 }

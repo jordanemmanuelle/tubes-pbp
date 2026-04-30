@@ -2,33 +2,149 @@
   padding: 20px;
 }
 
-.admin-form {
-  display: grid;
+/* TITLE */
+.admin-container h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* TABS */
+.admin-tabs {
+  display: flex;
+  justify-content: center;
   gap: 10px;
-  max-width: 400px;
   margin-bottom: 20px;
 }
 
+.admin-tabs button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 20px;
+  background: #eee;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.admin-tabs button:hover {
+  background: #ddd;
+}
+
+.admin-tabs button.active {
+  background: #d32f2f;
+  color: white;
+}
+
+.admin-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
 .admin-form input {
-  padding: 8px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
 }
 
 .admin-form button {
   padding: 10px;
+  border: none;
+  border-radius: 8px;
   background: #d32f2f;
   color: white;
-  border: none;
+  font-weight: bold;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+.admin-form button:hover {
+  background: #b71c1c;
 }
 
 .menu-list {
+  margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 15px;
 }
 
+/* CARD */
 .menu-item {
-  padding: 10px;
-  border: 1px solid #ddd;
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 10px;
   text-align: center;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: 0.2s;
+}
+
+.menu-item:hover {
+  transform: translateY(-3px);
+}
+
+/* IMAGE */
+.menu-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+/* TEXT */
+.menu-item h3 {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.menu-item p {
+  font-size: 13px;
+  margin: 3px 0;
+}
+
+.menu-item button {
+  margin: 5px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+/* EDIT */
+.menu-item button:first-of-type {
+  background: #ffcc00;
+  color: #000;
+}
+
+.menu-item button:first-of-type:hover {
+  background: #e6b800;
+}
+
+/* DELETE */
+.menu-item button:last-of-type {
+  background: #d32f2f;
+  color: white;
+}
+
+.menu-item button:last-of-type:hover {
+  background: #b71c1c;
+}
+
+.placeholder {
+  text-align: center;
+  margin-top: 40px;
 }

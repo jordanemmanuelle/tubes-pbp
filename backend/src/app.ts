@@ -7,6 +7,7 @@ import kategoriRoutes from './routes/kategori-routes';
 import menuRoutes from './routes/menu-routes';
 import adminRoutes from './routes/admin-routes';
 import transaksiRoutes from './routes/transaksi-routes';
+import promoRoutes from './routes/promo-routes';
 
 const app = express();
 const PORT = 5000;
@@ -18,6 +19,7 @@ app.use('/api/kategori', kategoriRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/transaksi', transaksiRoutes);
+app.use('/api/promo', promoRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Server McDonald\'s Backend Berjalan Lancar! 🍔');
