@@ -42,7 +42,6 @@ export default function Home() {
       ? menu
       : menu.filter((item) => item.kategori?.nama_kategori === kategoriAktif);
 
-  // --- CART LOGIC ---
   const tambah = (item: any) => {
     setCart((prev) => ({
       ...prev,
@@ -68,11 +67,10 @@ export default function Home() {
     });
   };
 
-  // --- TRANSAKSI LOGIC (Sesuai Backend Baru) ---
   const goTransaksi = (tipe: string, meja: number | null = null) => {
     const data = {
       tipe_pesanan: tipe,
-      nomor_meja: meja, // Mengirim angka murni atau null
+      nomor_meja: meja,
       items: Object.entries(cart).map(([id, item]) => ({
         menu_id: id,
         kuantitas: item.kuantitas,
@@ -81,7 +79,6 @@ export default function Home() {
 
     navigate("/transaksi", { state: data });
 
-    // Reset states
     setCart({});
     setShowCheckout(false);
     setStep("pilihTipe");
@@ -135,7 +132,7 @@ export default function Home() {
         })}
       </div>
 
-      {/* RINGKASAN KERANJANG */}
+      {/* KERANJANG */}
       <div className="cart">
         <h2>Keranjang 🛒</h2>
         {Object.keys(cart).length === 0 ? (
@@ -160,13 +157,12 @@ export default function Home() {
         )}
       </div>
 
-      {/* MODAL CHECKOUT */}
       {showCheckout && (
         <div className="modal">
           <div className="modal-content">
             <h3>Checkout</h3>
 
-            {/* STEP 1: PILIH TIPE */}
+            {/* PILIH TIPE */}
             {step === "pilihTipe" && (
               <>
                 <div className="metode-container">
@@ -183,7 +179,7 @@ export default function Home() {
               </>
             )}
 
-            {/* STEP 2: DINE IN OPTION */}
+            {/* DINE IN */}
             {step === "dineIn" && (
               <>
                 <div className="metode-container">
@@ -191,7 +187,7 @@ export default function Home() {
                     <img src="/images/AntarKeMeja.png" alt="Antar Meja" />
                     <p>Antar ke Meja</p>
                   </div>
-                  
+
                   <div className="metode-card" onClick={() => goTransaksi("dine-in", null)}>
                     <img src="/images/Counter.png" alt="Counter" />
                     <p>Ambil di Counter</p>
@@ -201,7 +197,7 @@ export default function Home() {
               </>
             )}
 
-            {/* STEP 3: INPUT MEJA */}
+            {/* INPUT MEJA */}
             {step === "meja" && (
               <>
                 <input

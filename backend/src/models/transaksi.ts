@@ -1,57 +1,65 @@
-import { Table, Column, Model, DataType, PrimaryKey, HasMany } from "sequelize-typescript";
-import { ItemTransaksi } from "./item-transaksi"; // Pastikan nama filenya benar
 
-@Table({
-  tableName: "transaksi",
-  timestamps: true,
-})
+import { Table, Column, Model, DataType, PrimaryKey, HasMany } from "sequelize-typescript";
+import { ItemTransaksi } from "./item-transaksi";
+
+@Table({ tableName: "transaksi", timestamps: true })
 export class Transaksi extends Model {
   @PrimaryKey
-  @Column({
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
+  @Column({ 
+    type: DataType.UUID, 
+    defaultValue: DataType.UUIDV4 
   })
   declare transaksi_id: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-    defaultValue: "Guest"
+  @Column({ 
+    type: DataType.STRING, 
+    allowNull: false 
   })
   declare nama_pelanggan: string;
 
-  @Column({
+  @Column({ 
     type: DataType.INTEGER, 
-    allowNull: true,
+    allowNull: false 
   })
-  declare nomor_meja: number;
+  declare total_harga: number; // Harga Asli (Sebelum Promo)
 
-  @Column({
-    type: DataType.ENUM("dine-in", "takeaway"),
-    defaultValue: "dine-in",
+  @Column({ 
+    type: DataType.INTEGER, 
     allowNull: false,
+    defaultValue: 0
   })
-  declare tipe_pesanan: string;
+  declare total_bayar: number; // Harga Akhir (Sesudah Promo) ✅
 
-  @Column({
-    type: DataType.ENUM("pending", "diproses", "selesai"),
-    defaultValue: "pending",
-    allowNull: false,
+  @Column({ 
+    type: DataType.INTEGER, 
+    defaultValue: 0 
+  })
+  declare diskon: number;
+
+  @Column({ 
+    type: DataType.STRING, 
+    allowNull: true 
+  })
+  declare kode_promo: string;
+
+  @Column({ 
+    type: DataType.ENUM("pending", "diproses", "selesai"), 
+    defaultValue: "pending" 
   })
   declare status: string;
 
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
+  @Column({ 
+    type: DataType.ENUM("dine-in", "takeaway"), 
+    allowNull: false 
   })
-  declare total_harga: number;
+  declare tipe_pesanan: string;
 
-  @Column({ type: DataType.DATE })
-  declare createdAt: Date;
+  @Column({ 
+    type: DataType.INTEGER, 
+    allowNull: true 
+  })
+  declare nomor_meja: number;
 
-  @Column({ type: DataType.DATE })
-  declare updatedAt: Date;
-
-  @HasMany(() => ItemTransaksi, 'transaksi_id')
+  @HasMany(() => ItemTransaksi)
   declare items: ItemTransaksi[];
 }

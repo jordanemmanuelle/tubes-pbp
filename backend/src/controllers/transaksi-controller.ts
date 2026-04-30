@@ -2,15 +2,15 @@ import { Request, Response } from 'express';
 import { Menu } from '../models/menu';
 import { Transaksi } from '../models/transaksi';
 import { ItemTransaksi } from '../models/item-transaksi';
+import { Promo } from '../models/promo'; // ✅ TAMBAHAN
 import sequelize from '../config/database'; 
 
 export const buatTransaksi = async (req: Request, res: Response): Promise<void> => {
-  // 1. Mulai pelindung transaksi (Transaction)
   const transaksi = await sequelize.transaction();
 
   try {
-    // TAMBAHKAN nomor_meja ke dalam destructuring req.body
-    const { nama_pelanggan, items, tipe_pesanan, nomor_meja } = req.body;
+    // ✅ TAMBAH kode_promo
+    const { nama_pelanggan, items, tipe_pesanan, nomor_meja, kode_promo } = req.body;
 
     if (!items || items.length === 0) {
       res.status(400).json({ sukses: false, pesan: "Keranjang belanja kosong!" });
@@ -20,7 +20,9 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
     let total_harga_semua = 0;
     const arrayItemTransaksi = [];
 
-    // 2. Loop setiap pesanan untuk divalidasi dan dipotong stoknya
+    // ===============================
+    // 🔥 1. HITUNG TOTAL + KURANGI STOK MENU
+    // ===============================
     for (const pesanan of items) {
       const menu = await Menu.findByPk(pesanan.menu_id, { transaction: transaksi });
 
@@ -32,14 +34,14 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
         throw new Error(`Stok menu ${menu.nama_menu} tidak mencukupi. Sisa stok: ${menu.stok}`);
       }
 
-      // Hitung harga
       const subtotal = menu.harga * pesanan.kuantitas;
       total_harga_semua += subtotal;
 
-      // Kurangi stok menu di database
-      await menu.update({ stok: menu.stok - pesanan.kuantitas }, { transaction: transaksi });
+      await menu.update(
+        { stok: menu.stok - pesanan.kuantitas },
+        { transaction: transaksi }
+      );
 
-      // Simpan data mentah
       arrayItemTransaksi.push({
         menu_id: pesanan.menu_id,
         kuantitas: pesanan.kuantitas,
@@ -47,32 +49,84 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
       });
     }
 
-    // --- PERBAIKAN LOGIKA NOMOR MEJA DI SINI ---
-    let nomorMejaFix = null;
-    if (tipe_pesanan === 'dine-in') {
-        // Gunakan nomor_meja dari frontend, JANGAN di-random lagi
-        nomorMejaFix = (nomor_meja !== undefined && nomor_meja !== null && nomor_meja !== "") ? nomor_meja : null;
+    // ===============================
+    // 🔥 2. LOGIC PROMO
+    // ===============================
+    let diskon = 0;
+    let promoDigunakan = null;
+
+    if (kode_promo) {
+      const promo = await Promo.findOne({
+        where: { kode_promo },
+        transaction: transaksi
+      });
+
+      if (!promo) throw new Error("Promo tidak ditemukan");
+
+      const now = new Date();
+
+      if (!promo.is_active) throw new Error("Promo tidak aktif");
+      if (promo.stok <= 0) throw new Error("Promo habis");
+      if (now < promo.tanggal_mulai || now > promo.tanggal_berakhir)
+        throw new Error("Promo tidak berlaku");
+      if (total_harga_semua < promo.minimal_belanja)
+        throw new Error("Minimal belanja belum terpenuhi");
+
+      // 💸 Hitung diskon
+      diskon = (promo.nilai_promo / 100) * total_harga_semua;
+
+      if (promo.maksimal_diskon) {
+        diskon = Math.min(diskon, promo.maksimal_diskon);
+      }
+
+      // 🔥 Kurangi stok promo
+      await promo.update(
+        { stok: promo.stok - 1 },
+        { transaction: transaksi }
+      );
+
+      promoDigunakan = promo.kode_promo;
     }
 
-    // 3. Buat Data Induk di Tabel Transaksi
+    const total_bayar = total_harga_semua - diskon;
+
+    // ===============================
+    // 🔥 3. NOMOR MEJA (TETAP)
+    // ===============================
+    let nomorMejaFix = null;
+    if (tipe_pesanan === 'dine-in') {
+      nomorMejaFix = (nomor_meja !== undefined && nomor_meja !== null && nomor_meja !== "")
+        ? nomor_meja
+        : null;
+    }
+
+    // ===============================
+    // 🔥 4. SIMPAN TRANSAKSI
+    // ===============================
     const transaksiBaru = await Transaksi.create({
       nama_pelanggan: nama_pelanggan || "Guest",
       total_harga: total_harga_semua,
+      total_bayar: total_bayar,   
+      diskon: diskon,
+      kode_promo: promoDigunakan,
       status: "pending",
       tipe_pesanan: tipe_pesanan || "dine-in",
-      nomor_meja: nomorMejaFix // Sekarang berisi data asli (misal: 30)
+      nomor_meja: nomorMejaFix
     }, { transaction: transaksi });
 
-    // 4. Sisipkan ID Transaksi Induk ke anak-anaknya
+    // ===============================
+    // 🔥 5. SIMPAN ITEM
+    // ===============================
     const dataItemFinal = arrayItemTransaksi.map(item => ({
       ...item,
       transaksi_id: transaksiBaru.transaksi_id 
     }));
 
-    // Simpan semua anak sekaligus
     await ItemTransaksi.bulkCreate(dataItemFinal, { transaction: transaksi });
 
-    // 5. JIKA SEMUA AMAN, COMMIT!
+    // ===============================
+    // 🔥 6. COMMIT
+    // ===============================
     await transaksi.commit();
 
     res.status(201).json({
@@ -82,7 +136,10 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
         id_transaksi: transaksiBaru.transaksi_id,
         pelanggan: transaksiBaru.nama_pelanggan,
         nomor_meja: transaksiBaru.nomor_meja,
-        total_bayar: total_harga_semua
+        total_harga: total_harga_semua,
+        diskon: diskon,
+        total_bayar: total_bayar,
+        promo: promoDigunakan
       }
     });
 
@@ -96,7 +153,9 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// Fungsi untuk Dapur/Kasir mengubah status pesanan
+// ===============================
+// UPDATE STATUS (TIDAK BERUBAH)
+// ===============================
 export const updateStatusTransaksi = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params; 
@@ -134,7 +193,9 @@ export const updateStatusTransaksi = async (req: Request, res: Response): Promis
   }
 };
 
-// Fungsi untuk melihat riwayat pesanan
+// ===============================
+// GET SEMUA TRANSAKSI (TIDAK BERUBAH)
+// ===============================
 export const getSemuaTransaksi = async (req: Request, res: Response): Promise<void> => {
   try {
     const riwayat = await Transaksi.findAll({

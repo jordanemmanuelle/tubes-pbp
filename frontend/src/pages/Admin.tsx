@@ -362,7 +362,6 @@ export default function Admin() {
         </>
       )}
 
-      {/* --- BAGIAN TRANSAKSI --- */}
       {tab === "transaksi" && (
         <div className="transaksi-admin-section">
           <h2>Riwayat Transaksi</h2>
