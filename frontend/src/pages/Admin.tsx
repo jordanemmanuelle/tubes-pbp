@@ -18,7 +18,6 @@ export default function Admin() {
   });
 
   const [editId, setEditId] = useState<string | null>(null);
-
   const API = "http://localhost:5000/api/menu";
 
   const [promo, setPromo] = useState<any[]>([]);
@@ -56,9 +55,7 @@ export default function Admin() {
   const fetchPromo = async () => {
     try {
       const res = await fetch(API_PROMO, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       setPromo(data?.data || []);
@@ -71,12 +68,9 @@ export default function Admin() {
   const fetchTransaksi = async () => {
     try {
       const res = await fetch(API_TRANSAKSI, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const result = await res.json();
-
       if (result.sukses || result.data) {
         setTransaksiList(result.data || []);
       }
@@ -117,7 +111,6 @@ export default function Admin() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
     const payload: any = {
       nama_menu: form.nama_menu,
       harga: Number(form.harga),
@@ -125,33 +118,18 @@ export default function Admin() {
       gambar: form.gambar,
       stok: Number(form.stok),
     };
-
     if (form.ukuran) payload.ukuran = form.ukuran;
 
     try {
-      if (editId) {
-        await fetch(`${API}/${editId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        await fetch(API, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-      }
-
-      setForm({
-        nama_menu: "",
-        harga: "",
-        kategori_id: "",
-        gambar: "",
-        stok: "",
-        ukuran: "",
+      const url = editId ? `${API}/${editId}` : API;
+      const method = editId ? "PUT" : "POST";
+      await fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
+      setForm({ nama_menu: "", harga: "", kategori_id: "", gambar: "", stok: "", ukuran: "" });
       setEditId(null);
       fetchMenu();
     } catch (err) {
@@ -168,7 +146,6 @@ export default function Admin() {
       stok: item.stok,
       ukuran: item.ukuran || "",
     });
-
     setEditId(item.menu_id);
     setTab("menu");
   };
@@ -185,54 +162,30 @@ export default function Admin() {
 
   const handleSubmitPromo = async (e: any) => {
     e.preventDefault();
-
     const payload = {
-      kode_promo: formPromo.kode_promo,
+      ...formPromo,
       nilai_promo: Number(formPromo.nilai_promo),
       minimal_belanja: Number(formPromo.minimal_belanja),
-      maksimal_diskon: formPromo.maksimal_diskon
-        ? Number(formPromo.maksimal_diskon)
-        : null,
+      maksimal_diskon: formPromo.maksimal_diskon ? Number(formPromo.maksimal_diskon) : null,
       stok: formPromo.stok ? Number(formPromo.stok) : null,
-      tanggal_mulai: formPromo.tanggal_mulai,
-      tanggal_berakhir: formPromo.tanggal_berakhir,
-      deskripsi: formPromo.deskripsi,
-      is_active: formPromo.is_active,
     };
 
     try {
-      if (editPromoId) {
-        await fetch(`${API_PROMO}/${editPromoId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        await fetch(API_PROMO, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        });
-      }
-
-      setFormPromo({
-        kode_promo: "",
-        nilai_promo: "",
-        minimal_belanja: "",
-        maksimal_diskon: "",
-        stok: "",
-        tanggal_mulai: "",
-        tanggal_berakhir: "",
-        deskripsi: "",
-        is_active: true,
+      const url = editPromoId ? `${API_PROMO}/${editPromoId}` : API_PROMO;
+      const method = editPromoId ? "PUT" : "POST";
+      await fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
       });
 
+      setFormPromo({
+        kode_promo: "", nilai_promo: "", minimal_belanja: "", maksimal_diskon: "",
+        stok: "", tanggal_mulai: "", tanggal_berakhir: "", deskripsi: "", is_active: true,
+      });
       setEditPromoId(null);
       fetchPromo();
     } catch (err) {
@@ -252,7 +205,6 @@ export default function Admin() {
       deskripsi: item.deskripsi,
       is_active: item.is_active,
     });
-
     setEditPromoId(item.promo_id);
     setTab("promo");
   };
@@ -261,39 +213,25 @@ export default function Admin() {
     if (!confirm("Yakin mau hapus promo?")) return;
     await fetch(`${API_PROMO}/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
     fetchPromo();
   };
 
-  const kategoriList = [
-    "Semua",
-    ...new Set(menu.map((m) => m.kategori?.nama_kategori)),
-  ];
-
-  const filteredMenu =
-    kategoriAktif === "Semua"
-      ? menu
-      : menu.filter((item) => item.kategori?.nama_kategori === kategoriAktif);
+  const kategoriList = ["Semua", ...new Set(menu.map((m) => m.kategori?.nama_kategori))];
+  const filteredMenu = kategoriAktif === "Semua" ? menu : menu.filter((item) => item.kategori?.nama_kategori === kategoriAktif);
 
   return (
     <div className="admin-container">
-      <button className="admin-btn" onClick={() => navigate("/home")}>
-        Home
-      </button>
-
-      <button className="logout-btn" onClick={() => {
-        const confirmLogout = window.confirm("Apakah Anda yakin ingin logout?");
-        if (confirmLogout) {
-
-
-          navigate("/login");
-        }
-      }}>
-        Logout
-      </button>
+      <div className="nav-header">
+        <button className="admin-btn" onClick={() => navigate("/home")}>Home</button>
+        <button className="logout-btn" onClick={() => {
+          if (window.confirm("Apakah Anda yakin ingin logout?")) {
+            localStorage.removeItem("token");
+            navigate("/login");
+          }
+        }}>Logout</button>
+      </div>
 
       <img src="/images/logo_mcd.jpg" className="logo-mcd" alt="logo" />
 
@@ -304,7 +242,7 @@ export default function Admin() {
       </div>
 
       {tab === "menu" && (
-        <>
+        <div className="section-content">
           <h2>Add & Edit Menu</h2>
           <form onSubmit={handleSubmit} className="admin-form">
             <input name="nama_menu" placeholder="Nama Menu" value={form.nama_menu} onChange={handleChange} />
@@ -315,8 +253,7 @@ export default function Admin() {
             <input name="ukuran" placeholder="Ukuran (optional)" value={form.ukuran} onChange={handleChange} />
             <button type="submit">{editId ? "Update" : "Tambah"}</button>
           </form>
-          <br />
-          <div className="admin-tabs">
+          <div className="kategori-filter">
             {kategoriList.map((kat, i) => (
               <button key={i} className={kategoriAktif === kat ? "active" : ""} onClick={() => setKategoriAktif(kat)}>{kat}</button>
             ))}
@@ -326,18 +263,20 @@ export default function Admin() {
               <div key={item.menu_id} className="menu-item">
                 <img src={item.gambar} width="80" alt={item.nama_menu} />
                 <h3>{item.nama_menu}</h3>
-                <p>Rp {item.harga}</p>
-                <button onClick={() => handleEdit(item)}>Edit</button>
-                <button onClick={() => handleDelete(item.menu_id)}>Hapus</button>
+                <p>Rp {Number(item.harga).toLocaleString("id-ID")}</p>
+                <div className="item-actions">
+                  <button onClick={() => handleEdit(item)}>Edit</button>
+                  <button onClick={() => handleDelete(item.menu_id)}>Hapus</button>
+                </div>
               </div>
             ))}
           </div>
-        </>
+        </div>
       )}
 
       {tab === "promo" && (
-        <>
-          <h2>Promo</h2>
+        <div className="section-content">
+          <h2>Management Promo</h2>
           <form onSubmit={handleSubmitPromo} className="admin-form">
             <input name="kode_promo" placeholder="Kode Promo" value={formPromo.kode_promo} onChange={handleChangePromo} />
             <input name="nilai_promo" placeholder="Nilai Promo" value={formPromo.nilai_promo} onChange={handleChangePromo} />
@@ -353,13 +292,16 @@ export default function Admin() {
             {(promo || []).map((item) => (
               <div key={item.promo_id} className="menu-item">
                 <h3>{item.kode_promo}</h3>
-                <p>{item.nilai_promo}</p>
-                <button onClick={() => handleEditPromo(item)}>Edit</button>
-                <button onClick={() => handleDeletePromo(item.promo_id)}>Hapus</button>
+                <p>Potongan: Rp {Number(item.nilai_promo).toLocaleString("id-ID")}</p>
+                <p>Stok: {item.stok}</p>
+                <div className="item-actions">
+                  <button onClick={() => handleEditPromo(item)}>Edit</button>
+                  <button onClick={() => handleDeletePromo(item.promo_id)}>Hapus</button>
+                </div>
               </div>
             ))}
           </div>
-        </>
+        </div>
       )}
 
       {tab === "transaksi" && (
@@ -371,10 +313,9 @@ export default function Admin() {
                 <tr>
                   <th>Waktu</th>
                   <th>Pelanggan</th>
-                  <th>Meja</th>
-                  <th>Tipe</th>
+                  <th>Tipe / Meja</th>
                   <th>Items</th>
-                  <th>Total</th>
+                  <th>Rincian Biaya</th>
                   <th>Status</th>
                   <th>Aksi</th>
                 </tr>
@@ -385,16 +326,28 @@ export default function Admin() {
                     <tr key={tr.transaksi_id}>
                       <td>{new Date(tr.createdAt).toLocaleString("id-ID")}</td>
                       <td>{tr.nama_pelanggan}</td>
-                      <td>{tr.nomor_meja || "-"}</td>
-                      <td>{tr.tipe_pesanan}</td>
+                      <td>
+                        {tr.tipe_pesanan} <br />
+                        <small>{tr.nomor_meja ? `Meja: ${tr.nomor_meja}` : "-"}</small>
+                      </td>
                       <td className="items-cell">
                         {tr.items?.map((it: any, idx: number) => (
-                          <div key={idx}>
+                          <div key={idx} style={{ fontSize: '12px' }}>
                             • {it.menu?.nama_menu} (x{it.kuantitas})
                           </div>
                         ))}
                       </td>
-                      <td><b>Rp {tr.total_harga.toLocaleString("id-ID")}</b></td>
+                      <td>
+                        <div style={{ fontSize: '12px' }}>
+                          Total: Rp {Number(tr.total_harga).toLocaleString("id-ID")} <br />
+                          {tr.diskon > 0 && (
+                            <span style={{ color: 'red' }}>
+                              Promo: -Rp {Number(tr.diskon).toLocaleString("id-ID")} ({tr.kode_promo})<br />
+                            </span>
+                          )}
+                          <b>Bayar: Rp {Number(tr.total_bayar || tr.total_harga - tr.diskon).toLocaleString("id-ID")}</b>
+                        </div>
+                      </td>
                       <td>
                         <span className={`status-badge ${tr.status}`}>
                           {tr.status}
@@ -415,8 +368,8 @@ export default function Admin() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={8} style={{ textAlign: 'center', padding: '20px' }}>
-                      Tidak ada data transaksi ditemukan.
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>
+                      Tidak ada data transaksi.
                     </td>
                   </tr>
                 )}
