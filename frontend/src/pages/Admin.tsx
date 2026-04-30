@@ -23,8 +23,11 @@ export default function Admin() {
 
   const [promo, setPromo] = useState<any[]>([]);
   const [editPromoId, setEditPromoId] = useState<string | null>(null);
+
   const token = localStorage.getItem("token");
-  console.log("TOKEN:", token);
+
+  const [transaksiList, setTransaksiList] = useState<any[]>([]);
+  const API_TRANSAKSI = "http://localhost:5000/api/transaksi";
 
   const [formPromo, setFormPromo] = useState({
     kode_promo: "",
@@ -65,10 +68,48 @@ export default function Admin() {
     }
   };
 
+  const fetchTransaksi = async () => {
+    try {
+      const res = await fetch(API_TRANSAKSI, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await res.json();
+
+      if (result.sukses || result.data) {
+        setTransaksiList(result.data || []);
+      }
+    } catch (err) {
+      console.error("Gagal fetch transaksi:", err);
+    }
+  };
+
   useEffect(() => {
     fetchMenu();
     fetchPromo();
+    fetchTransaksi();
   }, []);
+
+  const handleUpdateStatus = async (id: string, statusBaru: string) => {
+    try {
+      const res = await fetch(`${API_TRANSAKSI}/${id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: statusBaru }),
+      });
+
+      if (res.ok) {
+        alert(`Status berhasil diubah ke ${statusBaru}`);
+        fetchTransaksi();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -174,7 +215,7 @@ export default function Admin() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // 👈 INI WAJIB
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
         });
@@ -227,7 +268,6 @@ export default function Admin() {
     fetchPromo();
   };
 
-  // KATEGORI FILTER
   const kategoriList = [
     "Semua",
     ...new Set(menu.map((m) => m.kategori?.nama_kategori)),
@@ -240,25 +280,32 @@ export default function Admin() {
 
   return (
     <div className="admin-container">
-
       <button className="admin-btn" onClick={() => navigate("/home")}>
         Home
       </button>
 
-      <img src="/images/logo_mcd.jpg" className="logo-mcd" />
+      <button className="logout-btn" onClick={() => {
+        const confirmLogout = window.confirm("Apakah Anda yakin ingin logout?");
+        if (confirmLogout) {
 
-      {/* TAB */}
+
+          navigate("/login");
+        }
+      }}>
+        Logout
+      </button>
+
+      <img src="/images/logo_mcd.jpg" className="logo-mcd" alt="logo" />
+
       <div className="admin-tabs">
         <button className={tab === "menu" ? "active" : ""} onClick={() => setTab("menu")}>Menu</button>
         <button className={tab === "promo" ? "active" : ""} onClick={() => setTab("promo")}>Promo</button>
         <button className={tab === "transaksi" ? "active" : ""} onClick={() => setTab("transaksi")}>Transaksi</button>
       </div>
 
-      {/* MENU */}
       {tab === "menu" && (
         <>
           <h2>Add & Edit Menu</h2>
-
           <form onSubmit={handleSubmit} className="admin-form">
             <input name="nama_menu" placeholder="Nama Menu" value={form.nama_menu} onChange={handleChange} />
             <input name="harga" placeholder="Harga" value={form.harga} onChange={handleChange} />
@@ -266,30 +313,20 @@ export default function Admin() {
             <input name="gambar" placeholder="Link Gambar" value={form.gambar} onChange={handleChange} />
             <input name="stok" placeholder="Stok" value={form.stok} onChange={handleChange} />
             <input name="ukuran" placeholder="Ukuran (optional)" value={form.ukuran} onChange={handleChange} />
-
             <button type="submit">{editId ? "Update" : "Tambah"}</button>
           </form>
           <br />
-          {/* KATEGORI */}
           <div className="admin-tabs">
             {kategoriList.map((kat, i) => (
-              <button
-                key={i}
-                className={kategoriAktif === kat ? "active" : ""}
-                onClick={() => setKategoriAktif(kat)}
-              >
-                {kat}
-              </button>
+              <button key={i} className={kategoriAktif === kat ? "active" : ""} onClick={() => setKategoriAktif(kat)}>{kat}</button>
             ))}
           </div>
-
           <div className="menu-list">
             {filteredMenu.map((item) => (
               <div key={item.menu_id} className="menu-item">
-                <img src={item.gambar} width="80" />
+                <img src={item.gambar} width="80" alt={item.nama_menu} />
                 <h3>{item.nama_menu}</h3>
                 <p>Rp {item.harga}</p>
-
                 <button onClick={() => handleEdit(item)}>Edit</button>
                 <button onClick={() => handleDelete(item.menu_id)}>Hapus</button>
               </div>
@@ -298,11 +335,9 @@ export default function Admin() {
         </>
       )}
 
-      {/* PROMO */}
       {tab === "promo" && (
         <>
           <h2>Promo</h2>
-
           <form onSubmit={handleSubmitPromo} className="admin-form">
             <input name="kode_promo" placeholder="Kode Promo" value={formPromo.kode_promo} onChange={handleChangePromo} />
             <input name="nilai_promo" placeholder="Nilai Promo" value={formPromo.nilai_promo} onChange={handleChangePromo} />
@@ -312,16 +347,13 @@ export default function Admin() {
             <input name="tanggal_mulai" type="date" value={formPromo.tanggal_mulai} onChange={handleChangePromo} />
             <input name="tanggal_berakhir" type="date" value={formPromo.tanggal_berakhir} onChange={handleChangePromo} />
             <input name="deskripsi" placeholder="Deskripsi" value={formPromo.deskripsi} onChange={handleChangePromo} />
-
             <button type="submit">{editPromoId ? "Update" : "Tambah"}</button>
           </form>
-
           <div className="menu-list">
             {(promo || []).map((item) => (
               <div key={item.promo_id} className="menu-item">
                 <h3>{item.kode_promo}</h3>
                 <p>{item.nilai_promo}</p>
-
                 <button onClick={() => handleEditPromo(item)}>Edit</button>
                 <button onClick={() => handleDeletePromo(item.promo_id)}>Hapus</button>
               </div>
@@ -330,11 +362,68 @@ export default function Admin() {
         </>
       )}
 
-      {/* TRANSAKSI */}
+      {/* --- BAGIAN TRANSAKSI --- */}
       {tab === "transaksi" && (
-        <div className="placeholder">
-          <h1>Transaksi</h1>
-          <p>List pesanan & transaksi nanti di sini</p>
+        <div className="transaksi-admin-section">
+          <h2>Riwayat Transaksi</h2>
+          <div className="transaksi-table-container">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>Pelanggan</th>
+                  <th>Meja</th>
+                  <th>Tipe</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transaksiList.length > 0 ? (
+                  transaksiList.map((tr) => (
+                    <tr key={tr.transaksi_id}>
+                      <td>{new Date(tr.createdAt).toLocaleString("id-ID")}</td>
+                      <td>{tr.nama_pelanggan}</td>
+                      <td>{tr.nomor_meja || "-"}</td>
+                      <td>{tr.tipe_pesanan}</td>
+                      <td className="items-cell">
+                        {tr.items?.map((it: any, idx: number) => (
+                          <div key={idx}>
+                            • {it.menu?.nama_menu} (x{it.kuantitas})
+                          </div>
+                        ))}
+                      </td>
+                      <td><b>Rp {tr.total_harga.toLocaleString("id-ID")}</b></td>
+                      <td>
+                        <span className={`status-badge ${tr.status}`}>
+                          {tr.status}
+                        </span>
+                      </td>
+                      <td>
+                        <select
+                          value={tr.status}
+                          onChange={(e) => handleUpdateStatus(tr.transaksi_id, e.target.value)}
+                          className="status-select"
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="diproses">Diproses</option>
+                          <option value="selesai">Selesai</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={8} style={{ textAlign: 'center', padding: '20px' }}>
+                      Tidak ada data transaksi ditemukan.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

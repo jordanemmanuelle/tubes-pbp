@@ -1,0 +1,181 @@
+/* Container Utama */
+.transaksi-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Box Info (Tipe Pesanan & Meja) */
+.transaksi-box {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 12px;
+  margin: 20px auto;
+  width: fit-content;
+  min-width: 280px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.transaksi-box p {
+  margin: 5px 0;
+  font-size: 1rem;
+}
+
+/* List Item Pesanan */
+.transaksi-list {
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+}
+
+.transaksi-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.transaksi-item:last-child {
+  border-bottom: none;
+}
+
+/* Kolom Kiri: Gambar */
+.item-img {
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex: 0 0 65px;
+}
+
+/* Kolom Tengah: Nama Menu */
+.item-name {
+  flex: 1;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.item-name p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Kolom Kanan: Detail (ID, Qty, Harga) */
+.item-details {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.detail-id {
+  font-size: 0.8rem;
+  color: #999;
+  font-family: monospace;
+}
+
+.detail-qty {
+  font-weight: 500;
+  min-width: 60px;
+  text-align: left;
+}
+
+.detail-price {
+  font-weight: bold;
+  min-width: 110px;
+  text-align: right;
+  color: #222;
+}
+
+/* Bagian Ringkasan Total (Summary) */
+.transaksi-summary {
+  margin-top: 25px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between; /* Membuat Label di kiri, Angka di kanan */
+  padding: 8px 0;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.total-price-row {
+  border-top: 2px solid #eee;
+  margin-top: 10px;
+  padding-top: 15px;
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: #d32f2f; /* Warna merah untuk total harga */
+}
+
+/* Container Tombol */
+.action-buttons {
+  display: flex;
+  flex-direction: column; /* Tombol disusun vertikal */
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+/* Tombol Bayar */
+.pay-btn {
+  width: 100%;
+  max-width: 400px;
+  padding: 16px;
+  border: none;
+  background-color: #ffcc00; /* Kuning */
+  color: white; /* Teks putih */
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255, 204, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.pay-btn:hover {
+  background-color: #e6b800;
+  transform: translateY(-2px);
+}
+
+/* Tombol Kembali */
+.back-btn {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px;
+  border: none;
+  background-color: #d32f2f; /* Merah */
+  color: white; /* Teks putih */
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background-color: #b71c1c;
+  opacity: 0.9;
+}
+
+/* State Loading / Disabled */
+.pay-btn:disabled, .back-btn:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}

@@ -7,10 +7,13 @@ export default function Home() {
 
   const [kategoriAktif, setKategoriAktif] = useState("Semua");
   const [menu, setMenu] = useState<any[]>([]);
-  const [cart, setCart] = useState<{ [key: string]: number }>({});
+
+  const [cart, setCart] = useState<{
+    [key: string]: { nama: string; kuantitas: number }
+  }>({});
 
   const [showCheckout, setShowCheckout] = useState(false);
-  const [step, setStep] = useState<"pilih" | "meja">("pilih");
+  const [step, setStep] = useState<"pilihTipe" | "dineIn" | "meja">("pilihTipe");
   const [nomorMeja, setNomorMeja] = useState("");
 
   const API = "http://localhost:5000/api/menu";
@@ -37,95 +40,68 @@ export default function Home() {
   const filteredMenu =
     kategoriAktif === "Semua"
       ? menu
-      : menu.filter(
-          (item) => item.kategori?.nama_kategori === kategoriAktif
-        );
+      : menu.filter((item) => item.kategori?.nama_kategori === kategoriAktif);
 
-  const tambah = (nama: string) => {
+  // --- CART LOGIC ---
+  const tambah = (item: any) => {
     setCart((prev) => ({
       ...prev,
-      [nama]: (prev[nama] || 0) + 1,
+      [item.menu_id]: {
+        nama: item.nama_menu,
+        kuantitas: (prev[item.menu_id]?.kuantitas || 0) + 1,
+      },
     }));
   };
 
-  const kurang = (nama: string) => {
+  const kurang = (id: string) => {
     setCart((prev) => {
-      const jumlah = (prev[nama] || 0) - 1;
-
+      const jumlah = (prev[id]?.kuantitas || 0) - 1;
       if (jumlah <= 0) {
         const newCart = { ...prev };
-        delete newCart[nama];
+        delete newCart[id];
         return newCart;
       }
-
       return {
         ...prev,
-        [nama]: jumlah,
+        [id]: { ...prev[id], kuantitas: jumlah },
       };
     });
   };
 
-  // checkout
-  const handleCheckout = async (tipe: string) => {
-    if (tipe === "meja" && !nomorMeja) {
-      alert("Masukkan nomor meja!");
-      return;
-    }
+  // --- TRANSAKSI LOGIC (Sesuai Backend Baru) ---
+  const goTransaksi = (tipe: string, meja: number | null = null) => {
+    const data = {
+      tipe_pesanan: tipe,
+      nomor_meja: meja, // Mengirim angka murni atau null
+      items: Object.entries(cart).map(([id, item]) => ({
+        menu_id: id,
+        kuantitas: item.kuantitas,
+      })),
+    };
 
-    try {
-      const data = {
-        metode: tipe,
-        nomor_meja: tipe === "meja" ? parseInt(nomorMeja) : null,
-        items: Object.entries(cart).map(([nama, jumlah]) => ({
-          nama,
-          jumlah,
-        })),
-      };
+    navigate("/transaksi", { state: data });
 
-      const res = await fetch("http://localhost:5000/api/transaksi", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        alert("Transaksi berhasil!");
-        setCart({});
-        setShowCheckout(false);
-        setStep("pilih");
-        setNomorMeja("");
-        navigate("/transaksi");
-      } else {
-        alert(result.pesan || "Gagal transaksi");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error server");
-    }
+    // Reset states
+    setCart({});
+    setShowCheckout(false);
+    setStep("pilihTipe");
+    setNomorMeja("");
   };
 
   return (
     <div className="home-container">
-
-      {/* ADMIN */}
       <button className="admin-btn" onClick={() => navigate("/login")}>
         Admin
       </button>
 
-      <img src="/images/logo_mcd.jpg" className="logo-mcd" />
+      <img src="/images/logo_mcd.jpg" className="logo-mcd" alt="Logo" />
 
       {/* KATEGORI */}
       <div className="kategori-container">
         {kategoriList.map((kat, index) => (
           <button
             key={index}
-            className={`kategori-btn ${
-              kategoriAktif === kat ? "active" : ""
-            }`}
+            className={`kategori-btn ${kategoriAktif === kat ? "active" : ""}`}
             onClick={() => setKategoriAktif(kat)}
           >
             {kat}
@@ -133,28 +109,25 @@ export default function Home() {
         ))}
       </div>
 
-      {/* MENU */}
+      {/* MENU GRID */}
       <div className="menu-grid">
         {filteredMenu.map((item, index) => {
-          const jumlah = cart[item.nama_menu] || 0;
-
+          const jumlah = cart[item.menu_id]?.kuantitas || 0;
           return (
             <div key={index} className="menu-card">
               <div className="menu-content">
-                <img src={item.gambar} className="menu-img" />
+                <img src={item.gambar} className="menu-img" alt={item.nama_menu} />
                 <h3>{item.nama_menu}</h3>
                 <p>Rp {item.harga}</p>
               </div>
 
               {jumlah === 0 ? (
-                <button onClick={() => tambah(item.nama_menu)}>
-                  Beli
-                </button>
+                <button onClick={() => tambah(item)}>Beli</button>
               ) : (
                 <div className="qty-control">
-                  <button onClick={() => kurang(item.nama_menu)}>-</button>
+                  <button onClick={() => kurang(item.menu_id)}>-</button>
                   <span>{jumlah}</span>
-                  <button onClick={() => tambah(item.nama_menu)}>+</button>
+                  <button onClick={() => tambah(item)}>+</button>
                 </div>
               )}
             </div>
@@ -162,25 +135,23 @@ export default function Home() {
         })}
       </div>
 
-      {/* CART */}
+      {/* RINGKASAN KERANJANG */}
       <div className="cart">
         <h2>Keranjang 🛒</h2>
-
         {Object.keys(cart).length === 0 ? (
           <p>Kosong</p>
         ) : (
           <>
-            {Object.entries(cart).map(([nama, jumlah], index) => (
+            {Object.entries(cart).map(([id, item], index) => (
               <p key={index}>
-                {nama} x{jumlah}
+                {item.nama} x{item.kuantitas}
               </p>
             ))}
-
             <button
               className="checkout-btn"
               onClick={() => {
                 setShowCheckout(true);
-                setStep("pilih");
+                setStep("pilihTipe");
               }}
             >
               Checkout
@@ -189,43 +160,48 @@ export default function Home() {
         )}
       </div>
 
+      {/* MODAL CHECKOUT */}
       {showCheckout && (
         <div className="modal">
           <div className="modal-content">
             <h3>Checkout</h3>
 
-            {/* PILIH METODE */}
-            {step === "pilih" && (
+            {/* STEP 1: PILIH TIPE */}
+            {step === "pilihTipe" && (
               <>
                 <div className="metode-container">
-
-                  <div
-                    className="metode-card"
-                    onClick={() => setStep("meja")}
-                  >
-                    <img src="/images/AntarKeMeja.png" />
-                    <p>Diantar ke Meja</p>
+                  <div className="metode-card" onClick={() => setStep("dineIn")}>
+                    <img src="/images/AntarKeMeja.png" alt="Dine In" />
+                    <p>Dine In</p>
                   </div>
-
-                  <div
-                    className="metode-card"
-                    onClick={() => handleCheckout("counter")}
-                  >
-                    <img src="/images/Counter.png" />
-                    <p>Ambil di Counter</p>
+                  <div className="metode-card" onClick={() => goTransaksi("takeaway", null)}>
+                    <img src="/images/Counter.png" alt="Take Away" />
+                    <p>Take Away</p>
                   </div>
                 </div>
-
-                <button
-                  className="cancel-btn"
-                  onClick={() => setShowCheckout(false)}
-                >
-                  Batal
-                </button>
+                <button className="cancel-btn" onClick={() => setShowCheckout(false)}>Batal</button>
               </>
             )}
 
-            {/* INPUT MEJA */}
+            {/* STEP 2: DINE IN OPTION */}
+            {step === "dineIn" && (
+              <>
+                <div className="metode-container">
+                  <div className="metode-card" onClick={() => setStep("meja")}>
+                    <img src="/images/AntarKeMeja.png" alt="Antar Meja" />
+                    <p>Antar ke Meja</p>
+                  </div>
+                  
+                  <div className="metode-card" onClick={() => goTransaksi("dine-in", null)}>
+                    <img src="/images/Counter.png" alt="Counter" />
+                    <p>Ambil di Counter</p>
+                  </div>
+                </div>
+                <button className="back-btn" onClick={() => setStep("pilihTipe")}>Kembali</button>
+              </>
+            )}
+
+            {/* STEP 3: INPUT MEJA */}
             {step === "meja" && (
               <>
                 <input
@@ -234,23 +210,21 @@ export default function Home() {
                   value={nomorMeja}
                   onChange={(e) => setNomorMeja(e.target.value)}
                 />
-
                 <button
                   className="confirm-btn"
-                  onClick={() => handleCheckout("meja")}
+                  onClick={() => {
+                    if (!nomorMeja) {
+                      alert("Isi nomor meja!");
+                      return;
+                    }
+                    goTransaksi("dine-in", parseInt(nomorMeja));
+                  }}
                 >
                   Konfirmasi
                 </button>
-
-                <button
-                  className="back-btn"
-                  onClick={() => setStep("pilih")}
-                >
-                  Kembali
-                </button>
+                <button className="back-btn" onClick={() => setStep("dineIn")}>Kembali</button>
               </>
             )}
-
           </div>
         </div>
       )}
