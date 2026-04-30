@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("item_transaksi", {
-      id: { // DIPERBAIKI: Disesuaikan dengan model (bukan item_transaksi_id)
+      id: { 
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
@@ -15,12 +15,12 @@ module.exports = {
         allowNull: false,
         references: { model: "transaksi", key: "transaksi_id" },
         onUpdate: "CASCADE",
-        onDelete: "CASCADE" // Sangat bagus! Jika transaksi dihapus, itemnya ikut terhapus
+        onDelete: "CASCADE" 
       },
       menu_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        references: { model: "menu", key: "id" }, // Pastikan ini sesuai dengan Primary Key tabel menu-mu
+        references: { model: "menu", key: "id" }, 
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       },
@@ -29,7 +29,7 @@ module.exports = {
         allowNull: false,
         defaultValue: 1
       },
-      harga_satuan: { // DIPERBAIKI: Disesuaikan dengan controller yang memanggil 'harga_satuan'
+      harga_satuan: { 
         type: Sequelize.INTEGER,
         allowNull: false,
       },

@@ -13,7 +13,7 @@ module.exports = {
       nama_kategori: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true // Supaya tidak ada kategori ganda (misal 2x "ayam")
+        unique: true
       },
       createdAt: { allowNull: false, type: Sequelize.DATE },
       updatedAt: { allowNull: false, type: Sequelize.DATE }

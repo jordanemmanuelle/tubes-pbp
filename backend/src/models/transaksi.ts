@@ -21,14 +21,14 @@ export class Transaksi extends Model {
     type: DataType.INTEGER, 
     allowNull: false 
   })
-  declare total_harga: number; // Harga Asli (Sebelum Promo)
+  declare total_harga: number; // Before promo
 
   @Column({ 
     type: DataType.INTEGER, 
     allowNull: false,
     defaultValue: 0
   })
-  declare total_bayar: number; // Harga Akhir (Sesudah Promo) ✅
+  declare total_bayar: number; // After promo
 
   @Column({ 
     type: DataType.INTEGER, 

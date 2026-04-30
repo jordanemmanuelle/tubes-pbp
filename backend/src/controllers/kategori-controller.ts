@@ -6,7 +6,6 @@
 import { Request, Response } from 'express';
 import { Kategori } from '../models/kategori';
 
-// Mengambil semua data kategori
 export const getKategori = async (req: Request, res: Response) => {
   try {
     const kategori = await Kategori.findAll();
@@ -17,7 +16,6 @@ export const getKategori = async (req: Request, res: Response) => {
   }
 };
 
-// Membuat kategori baru (Admin Only nantinya)
 export const tambahKategori = async (req: Request, res: Response): Promise<void> => {
   try {
     const { nama_kategori } = req.body;
@@ -30,7 +28,6 @@ export const tambahKategori = async (req: Request, res: Response): Promise<void>
     const kategoriBaru = await Kategori.create({ nama_kategori });
     res.status(201).json({ sukses: true, pesan: "Kategori berhasil ditambahkan", data: kategoriBaru });
   } catch (error: any) {
-    // Menangani error jika nama kategori sudah ada (unique constraint)
     if (error.name === 'SequelizeUniqueConstraintError') {
       res.status(400).json({ sukses: false, pesan: "Kategori sudah ada" });
       return;
@@ -40,7 +37,6 @@ export const tambahKategori = async (req: Request, res: Response): Promise<void>
   }
 };
 
-// Mengubah Nama Kategori (Update)
 export const updateKategori = async (req: Request, res: Response): Promise<void> => {
   try {
     const id = req.params.id as string;
@@ -64,7 +60,6 @@ export const updateKategori = async (req: Request, res: Response): Promise<void>
   }
 };
 
-// Menghapus Kategori (Delete)
 export const deleteKategori = async (req: Request, res: Response): Promise<void> => {
   try {
     const id = req.params.id as string;
@@ -75,8 +70,6 @@ export const deleteKategori = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    // Catatan: Karena kita pakai onDelete: RESTRICT di migration, 
-    // jika kategori masih punya menu, ini akan otomatis error.
     await kategori.destroy();
     res.status(200).json({ sukses: true, pesan: "Kategori berhasil dihapus" });
   } catch (error) {

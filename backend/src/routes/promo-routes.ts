@@ -4,7 +4,6 @@ import { verifyToken } from '../middleware/authMiddleware';
 
 const router = Router();
 
-// Semua operasi CRUD promo bersifat rahasia, wajib pakai Token Admin
 router.post('/', verifyToken, tambahPromo);
 router.get('/', verifyToken, getSemuaPromo);
 router.put('/:id', verifyToken, updatePromo);

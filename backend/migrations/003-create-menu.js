@@ -15,8 +15,8 @@ module.exports = {
         allowNull: false,
       },
       ukuran: { 
-        type: Sequelize.STRING, // Contoh isi: 'Regular', 'Large', atau dibiarkan kosong (NULL)
-        allowNull: true, // WAJIB true, karena ada menu yang tidak punya ukuran (contoh: Burger, Es Krim)
+        type: Sequelize.STRING, 
+        allowNull: true, 
       },
       harga: {
         type: Sequelize.INTEGER,
@@ -27,7 +27,7 @@ module.exports = {
         allowNull: false,
         references: { model: "kategori", key: "kategori_id" },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT" // mencegah kategori dihapus jika masih ada menunya
+        onDelete: "RESTRICT" 
       },
       gambar: { 
         type: Sequelize.STRING,
@@ -37,7 +37,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true
       },
-      createdAt: { // Ingat, gunakan camelCase agar tidak bentrok dengan bawaan Sequelize
+      createdAt: { 
         allowNull: false,
         type: Sequelize.DATE
       },

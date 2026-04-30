@@ -38,7 +38,6 @@ export class Admin extends Model {
   })
   declare role: string;
 
-  // Persiapan untuk fitur Forget Password nanti
   @Column({
     type: DataType.STRING,
     allowNull: true,

@@ -13,7 +13,7 @@ const app = express();
 const PORT = 5000;
 
 app.use(cors());
-app.use(express.json()); // Agar backend bisa menerima data JSON dari frontend
+app.use(express.json()); 
 
 app.use('/api/kategori', kategoriRoutes);
 app.use('/api/menu', menuRoutes);
@@ -22,25 +22,22 @@ app.use('/api/transaksi', transaksiRoutes);
 app.use('/api/promo', promoRoutes);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Server McDonald\'s Backend Berjalan Lancar! 🍔');
+  res.send('Server McDonald\'s Backend Berjalan Lancar!');
 });
 
 const startServer = async () => {
   try {
     await sequelize.authenticate();
-    console.log('✅ Berhasil terkoneksi ke database PostgreSQL dengan Sequelize-TypeScript!');
+    console.log('Berhasil terkoneksi ke database PostgreSQL dengan Sequelize-TypeScript!');
 
-    // --- TAMBAHKAN BARIS INI ---
-    // Perintah ini akan menyuruh Sequelize mengecek tabel dan menambahkan kolom yang kurang
     await sequelize.sync({ alter: true }); 
-    console.log('✅ Struktur tabel database otomatis disinkronkan!');
-    // ---------------------------
+    console.log('Struktur tabel database otomatis disinkronkan!');
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server berjalan di http://localhost:${PORT}`);
+      console.log(`Server berjalan di http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('❌ Gagal terkoneksi ke database:', error);
+    console.error('Gagal terkoneksi ke database:', error);
   }
 };
 

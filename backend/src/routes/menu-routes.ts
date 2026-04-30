@@ -3,11 +3,10 @@ import { getMenu, tambahMenu, updateMenu, deleteMenu } from '../controllers/menu
 
 const router = Router();
 
-router.get('/', getMenu);               // GET: Mengambil semua menu
-router.post('/', tambahMenu);           // POST: Menambah menu baru
+router.get('/', getMenu);             
+router.post('/', tambahMenu);           
 
-// Endpoint baru menggunakan parameter :id
-router.put('/:id', updateMenu);         // PUT: Mengubah data menu secara spesifik
-router.delete('/:id', deleteMenu);      // DELETE: Menghapus menu secara spesifik
+router.put('/:id', updateMenu);       
+router.delete('/:id', deleteMenu);  
 
 export default router;

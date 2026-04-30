@@ -11,14 +11,14 @@ import {
 
 @Table({
   tableName: "menu",
-  timestamps: true, // Karena di migration ada createdAt & updatedAt
+  timestamps: true, 
 })
 export class Menu extends Model {
   @PrimaryKey
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
-    field: "menu_id", // Nama kolom asli di database
+    field: "menu_id",
   })
   declare menu_id: string;
 

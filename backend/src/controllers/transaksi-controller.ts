@@ -2,14 +2,13 @@ import { Request, Response } from 'express';
 import { Menu } from '../models/menu';
 import { Transaksi } from '../models/transaksi';
 import { ItemTransaksi } from '../models/item-transaksi';
-import { Promo } from '../models/promo'; // ✅ TAMBAHAN
+import { Promo } from '../models/promo'; 
 import sequelize from '../config/database'; 
 
 export const buatTransaksi = async (req: Request, res: Response): Promise<void> => {
   const transaksi = await sequelize.transaction();
 
   try {
-    // ✅ TAMBAH kode_promo
     const { nama_pelanggan, items, tipe_pesanan, nomor_meja, kode_promo } = req.body;
 
     if (!items || items.length === 0) {
@@ -20,9 +19,7 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
     let total_harga_semua = 0;
     const arrayItemTransaksi = [];
 
-    // ===============================
-    // 🔥 1. HITUNG TOTAL + KURANGI STOK MENU
-    // ===============================
+    // hitung total + kurangi stok menu
     for (const pesanan of items) {
       const menu = await Menu.findByPk(pesanan.menu_id, { transaction: transaksi });
 
@@ -49,9 +46,6 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
       });
     }
 
-    // ===============================
-    // 🔥 2. LOGIC PROMO
-    // ===============================
     let diskon = 0;
     let promoDigunakan = null;
 
@@ -72,14 +66,12 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
       if (total_harga_semua < promo.minimal_belanja)
         throw new Error("Minimal belanja belum terpenuhi");
 
-      // 💸 Hitung diskon
       diskon = (promo.nilai_promo / 100) * total_harga_semua;
 
       if (promo.maksimal_diskon) {
         diskon = Math.min(diskon, promo.maksimal_diskon);
       }
 
-      // 🔥 Kurangi stok promo
       await promo.update(
         { stok: promo.stok - 1 },
         { transaction: transaksi }
@@ -90,9 +82,6 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
 
     const total_bayar = total_harga_semua - diskon;
 
-    // ===============================
-    // 🔥 3. NOMOR MEJA (TETAP)
-    // ===============================
     let nomorMejaFix = null;
     if (tipe_pesanan === 'dine-in') {
       nomorMejaFix = (nomor_meja !== undefined && nomor_meja !== null && nomor_meja !== "")
@@ -100,9 +89,6 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
         : null;
     }
 
-    // ===============================
-    // 🔥 4. SIMPAN TRANSAKSI
-    // ===============================
     const transaksiBaru = await Transaksi.create({
       nama_pelanggan: nama_pelanggan || "Guest",
       total_harga: total_harga_semua,
@@ -114,9 +100,6 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
       nomor_meja: nomorMejaFix
     }, { transaction: transaksi });
 
-    // ===============================
-    // 🔥 5. SIMPAN ITEM
-    // ===============================
     const dataItemFinal = arrayItemTransaksi.map(item => ({
       ...item,
       transaksi_id: transaksiBaru.transaksi_id 
@@ -124,9 +107,6 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
 
     await ItemTransaksi.bulkCreate(dataItemFinal, { transaction: transaksi });
 
-    // ===============================
-    // 🔥 6. COMMIT
-    // ===============================
     await transaksi.commit();
 
     res.status(201).json({
@@ -153,9 +133,6 @@ export const buatTransaksi = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// ===============================
-// UPDATE STATUS (TIDAK BERUBAH)
-// ===============================
 export const updateStatusTransaksi = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params; 
@@ -193,9 +170,6 @@ export const updateStatusTransaksi = async (req: Request, res: Response): Promis
   }
 };
 
-// ===============================
-// GET SEMUA TRANSAKSI (TIDAK BERUBAH)
-// ===============================
 export const getSemuaTransaksi = async (req: Request, res: Response): Promise<void> => {
   try {
     const riwayat = await Transaksi.findAll({

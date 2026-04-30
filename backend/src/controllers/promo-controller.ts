@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { Promo } from '../models/promo';
 
-// CREATE: Tambah Promo Baru
 export const tambahPromo = async (req: Request, res: Response): Promise<void> => {
   try {
     const promoBaru = await Promo.create(req.body);
@@ -11,7 +10,6 @@ export const tambahPromo = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-// READ: Ambil Semua Promo
 export const getSemuaPromo = async (req: Request, res: Response): Promise<void> => {
   try {
     const daftarPromo = await Promo.findAll();
@@ -21,7 +19,6 @@ export const getSemuaPromo = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// UPDATE: Edit Promo (Misal mengubah stok atau menonaktifkan promo)
 export const updatePromo = async (req: Request, res: Response): Promise<void> => {
   try {
     const promo_id = req.params.id as string;
@@ -39,7 +36,6 @@ export const updatePromo = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-// DELETE: Hapus Promo
 export const hapusPromo = async (req: Request, res: Response): Promise<void> => {
   try {
     const promo_id = req.params.id as string;

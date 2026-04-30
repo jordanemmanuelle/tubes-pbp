@@ -14,7 +14,6 @@ export class ItemTransaksi extends Model {
   })
   declare id: string;
 
-  // 1. Foreign Key ke tabel Transaksi
   @ForeignKey(() => Transaksi)
   @Column({
     type: DataType.UUID,
@@ -22,10 +21,9 @@ export class ItemTransaksi extends Model {
   })
   declare transaksi_id: string;
 
-  // 2. Foreign Key ke tabel Menu
   @ForeignKey(() => Menu)
   @Column({
-    type: DataType.UUID, // ATAU INTEGER, sesuaikan dengan tipe Primary Key di tabel Menu kamu!
+    type: DataType.UUID,
     allowNull: false,
   })
   declare menu_id: string;
@@ -42,13 +40,9 @@ export class ItemTransaksi extends Model {
   })
   declare harga_satuan: number;
 
-  // --- RELASI BALIK ---
-
-  // Relasi balik ke Transaksi (Anak melapor ke Bapak)
   @BelongsTo(() => Transaksi, 'transaksi_id')
   declare transaksi: Transaksi;
 
-  // Relasi ke Menu (Agar kita bisa tahu pesanan ini makanan apa)
   @BelongsTo(() => Menu, 'menu_id')
   declare menu: Menu;
 }

@@ -10,27 +10,27 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
       },
-      kode_promo: { // MCDTERBAIK, HEMAT50, IDULFITRI
+      kode_promo: { 
         type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
-      nilai_promo: { // POTONGAN HARGANYA BERAPA CONTOH: 20rb, 25rb, dll
+      nilai_promo: { 
         type: Sequelize.INTEGER,
         allowNull: false
       },
       minimal_belanja: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 0 // Default 0 berarti tidak ada minimal belanja
+        defaultValue: 0 
       },
       maksimal_diskon: {
         type: Sequelize.INTEGER,
-        allowNull: true // Bisa dikosongkan jika tipe promonya 'nominal'
+        allowNull: true 
       },
       stok: {
         type: Sequelize.INTEGER,
-        allowNull: true // Bisa dikosongkan jika promo unlimited
+        allowNull: true 
       },
       tanggal_mulai: {
         type: Sequelize.DATE,
