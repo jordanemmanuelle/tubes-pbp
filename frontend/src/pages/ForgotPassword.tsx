@@ -20,8 +20,8 @@ export default function ForgotPassword() {
       const data = await response.json();
 
       if (data.sukses) {
-        alert("Success! Please check the Backend terminal for your reset link.");
-        navigate("/login"); // Send them back to login after success
+        alert("Silahkan cek terminal untuk link reset password.");
+        navigate("/login"); 
       } else {
         alert("Failed: " + data.pesan);
       }
