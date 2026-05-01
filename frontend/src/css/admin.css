@@ -197,7 +197,6 @@
   min-width: 150px;
 }
 
-/* BADGE STATUS */
 .status-badge {
   padding: 4px 8px;
   border-radius: 12px;
@@ -215,4 +214,49 @@
   border-radius: 6px;
   border: 1px solid #ddd;
   cursor: pointer;
+}
+
+.kategori-filter {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.kategori-filter button {
+  padding: 8px 16px;
+  border: 2px solid #d32f2f;
+  border-radius: 25px;
+  background: white;
+  color: #d32f2f;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.kategori-filter button:hover {
+  background: #fff5f5;
+}
+
+.kategori-filter button.active {
+  background: #d32f2f;
+  color: white;
+}
+
+.nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  background: #ffcc00;
+  color: black;
 }
