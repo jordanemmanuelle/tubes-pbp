@@ -194,7 +194,6 @@ export default function Admin() {
   };
 
   const handleEditPromo = (item: any) => {
-    // 1. Kita potong string tanggalnya di sini (Hanya ambil YYYY-MM-DD)
     const tglMulai = item.tanggal_mulai ? item.tanggal_mulai.split('T')[0] : "";
     const tglBerakhir = item.tanggal_berakhir ? item.tanggal_berakhir.split('T')[0] : "";
 
@@ -204,8 +203,8 @@ export default function Admin() {
       minimal_belanja: item.minimal_belanja,
       maksimal_diskon: item.maksimal_diskon,
       stok: item.stok,
-      tanggal_mulai: tglMulai,       // <-- Gunakan tanggal yang sudah dipotong
-      tanggal_berakhir: tglBerakhir, // <-- Gunakan tanggal yang sudah dipotong
+      tanggal_mulai: tglMulai,     
+      tanggal_berakhir: tglBerakhir,
       deskripsi: item.deskripsi,
       is_active: item.is_active,
     });

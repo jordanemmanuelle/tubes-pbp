@@ -16,13 +16,14 @@ import { Request, Response } from 'express';
 import { Admin } from '../models/admin';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto'; // <-- TAMBAHAN BARU: Untuk membuat token acak
 
 const JWT_SECRET = "RAHASIA_MCD_TUBES_PBP_2026";
 
-// Fungsi 1: Membuat Akun Admin Baru
 export const registerAdmin = async (req: Request, res: Response): Promise<void> => {
   try {
     const { nama, email, password, role } = req.body;
+    
 
     const adminAda = await Admin.findOne({ where: { email } });
     if (adminAda) {
@@ -48,7 +49,6 @@ export const registerAdmin = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// Fungsi 2: Login dan Mendapatkan Tiket (Token)
 export const loginAdmin = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
@@ -65,11 +65,10 @@ export const loginAdmin = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    // Buat Tiket Akses (Token)
     const token = jwt.sign(
       { admin_id: admin.admin_id, role: admin.role },
       JWT_SECRET,
-      { expiresIn: "1d" } // Token berlaku 1 hari
+      { expiresIn: "1d" } 
     );
 
     res.status(200).json({
@@ -85,5 +84,76 @@ export const loginAdmin = async (req: Request, res: Response): Promise<void> => 
   } catch (error) {
     console.error("Error login:", error);
     res.status(500).json({ sukses: false, pesan: "Terjadi kesalahan server" });
+  }
+};
+
+export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email } = req.body;
+    const admin = await Admin.findOne({ where: { email } });
+
+    if (!admin) {
+      res.status(404).json({ sukses: false, pesan: "Email tidak terdaftar!" });
+      return;
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    const expireTime = new Date(Date.now() + 60 * 60 * 1000); 
+
+    admin.reset_token = resetToken;
+    admin.reset_token_expires = expireTime; 
+    await admin.save();
+
+    const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+
+    console.log(`\n======================================`);
+    console.log(`🚨 KLIK LINK INI UNTUK RESET PASSWORD:`);
+    console.log(`Email: ${email}`);
+    console.log(`Link : ${resetLink}`);
+    console.log(`======================================\n`);
+
+    res.status(200).json({ 
+      sukses: true, 
+      pesan: "Link reset password berhasil dibuat! Cek terminal backend." 
+    });
+
+  } catch (error) {
+    console.error("Error forgot password:", error);
+    res.status(500).json({ sukses: false, pesan: "Terjadi kesalahan server saat memproses forgot password" });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token } = req.params;
+    const { passwordBaru } = req.body;
+
+    const admin = await Admin.findOne({ where: { reset_token: token } });
+
+    if (!admin) {
+      res.status(400).json({ sukses: false, pesan: "Token tidak valid atau salah!" });
+      return;
+    }
+
+    if (admin.reset_token_expires && admin.reset_token_expires < new Date()) {
+      res.status(400).json({ sukses: false, pesan: "Token sudah kadaluarsa! Silakan minta link baru." });
+      return;
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(passwordBaru, salt);
+
+    admin.password = hashedPassword;
+    admin.reset_token = null;
+    admin.reset_token_expires = null;
+    
+    await admin.save();
+
+    res.status(200).json({ sukses: true, pesan: "Password berhasil diubah! Silakan login kembali." });
+
+  } catch (error) {
+    console.error("Error reset password:", error);
+    res.status(500).json({ sukses: false, pesan: "Terjadi kesalahan server saat mereset password" });
   }
 };
