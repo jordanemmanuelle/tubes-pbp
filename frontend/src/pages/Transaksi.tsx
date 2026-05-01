@@ -74,8 +74,10 @@ export default function Transaksi() {
             return;
         }
 
-        let potongan = promo.nilai_promo;
+        // 1. Hitung persentasenya terlebih dahulu dari total harga
+        let potongan = (promo.nilai_promo / 100) * totalHarga;
 
+        // 2. Batasi diskon jika melebihi maksimal diskon yang ditetapkan
         if (promo.maksimal_diskon && potongan > promo.maksimal_diskon) {
             potongan = promo.maksimal_diskon;
         }
@@ -168,7 +170,7 @@ export default function Transaksi() {
                         .filter(p => p.is_active && p.stok > 0)
                         .map((promo) => (
                             <option key={promo.promo_id} value={promo.kode_promo}>
-                                {promo.kode_promo} (Potongan Rp {promo.nilai_promo.toLocaleString()})
+                                {promo.kode_promo} (Diskon {promo.nilai_promo}% {promo.maksimal_diskon ? `, Maks. Rp ${promo.maksimal_diskon.toLocaleString("id-ID")}` : ""})
                             </option>
                         ))}
                 </select>
