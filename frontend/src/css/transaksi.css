@@ -1,4 +1,3 @@
-/* Container Utama */
 .transaksi-container {
   padding: 20px;
   max-width: 800px;
@@ -8,7 +7,6 @@
   color: #333;
 }
 
-/* Box Info (Tipe Pesanan & Meja) */
 .transaksi-box {
   background: #f8f9fa;
   padding: 15px;
@@ -25,7 +23,6 @@
   font-size: 1rem;
 }
 
-/* List Item Pesanan */
 .transaksi-list {
   margin-top: 20px;
   border: 1px solid #ddd;
@@ -46,7 +43,6 @@
   border-bottom: none;
 }
 
-/* Kolom Kiri: Gambar */
 .item-img {
   width: 65px;
   height: 65px;
@@ -55,7 +51,6 @@
   flex: 0 0 65px;
 }
 
-/* Kolom Tengah: Nama Menu */
 .item-name {
   flex: 1;
   text-align: center;
@@ -67,7 +62,6 @@
   font-size: 1.1rem;
 }
 
-/* Kolom Kanan: Detail (ID, Qty, Harga) */
 .item-details {
   display: flex;
   align-items: center;
@@ -95,7 +89,6 @@
   color: #222;
 }
 
-/* Bagian Ringkasan Total (Summary) */
 .transaksi-summary {
   margin-top: 25px;
   background: #fff;
@@ -106,7 +99,7 @@
 
 .summary-row {
   display: flex;
-  justify-content: space-between; /* Membuat Label di kiri, Angka di kanan */
+  justify-content: space-between;
   padding: 8px 0;
   font-size: 1.1rem;
   color: #555;
@@ -118,26 +111,24 @@
   padding-top: 15px;
   font-weight: bold;
   font-size: 1.4rem;
-  color: #d32f2f; /* Warna merah untuk total harga */
+  color: #d32f2f;
 }
 
-/* Container Tombol */
 .action-buttons {
   display: flex;
-  flex-direction: column; /* Tombol disusun vertikal */
+  flex-direction: column;
   align-items: center;
   gap: 15px;
   margin-top: 30px;
 }
 
-/* Tombol Bayar */
 .pay-btn {
   width: 100%;
   max-width: 400px;
   padding: 16px;
   border: none;
-  background-color: #ffcc00; /* Kuning */
-  color: white; /* Teks putih */
+  background-color: #ffcc00; 
+  color: white;
   border-radius: 30px;
   font-weight: bold;
   font-size: 1.1rem;
@@ -151,14 +142,13 @@
   transform: translateY(-2px);
 }
 
-/* Tombol Kembali */
 .back-btn {
   width: 100%;
   max-width: 400px;
   padding: 12px;
   border: none;
-  background-color: #d32f2f; /* Merah */
-  color: white; /* Teks putih */
+  background-color: #d32f2f;
+  color: white;
   border-radius: 30px;
   font-weight: bold;
   font-size: 1rem;
@@ -171,11 +161,75 @@
   opacity: 0.9;
 }
 
-/* State Loading / Disabled */
 .pay-btn:disabled, .back-btn:disabled {
   background-color: #ccc;
   color: #666;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
+}
+
+/* PROMO */
+.promo-section {
+    margin-top: 25px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: left;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.promo-section h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.promo-section h3::before {
+    content: "🎫"; 
+}
+
+.promo-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.promo-section select {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 2px solid #eee;
+    background-color: #f9f9f9;
+    font-size: 1rem;
+    color: #444;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23d32f2f%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px top 50%;
+    background-size: 18px;
+}
+
+.promo-section select:focus {
+    border-color: #ffcc00;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.2);
+}
+
+.promo-section select:hover {
+    border-color: #d32f2f;
+}
+
+.promo-info {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #2e7d32;
+    font-weight: 500;
 }

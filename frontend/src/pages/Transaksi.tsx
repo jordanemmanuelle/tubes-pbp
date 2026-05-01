@@ -117,20 +117,15 @@ export default function Transaksi() {
         }
     };
 
-    const handleLogout = () => {
-        if (window.confirm("Apakah anda yakin ingin logout?")) {
-            localStorage.removeItem("token");
-            navigate("/login");
-        }
-    };
 
     if (loading) return <div className="transaksi-container"><h1>Memuat Data...</h1></div>;
 
     return (
         <div className="transaksi-container">
             <div className="nav-buttons">
+                <img src="/images/logo_mcd.jpg" className="logo-mcd" alt="Logo" />
                 <button className="admin-btn" onClick={() => navigate("/home")}>Home</button>
-                <button className="logout-btn" onClick={handleLogout}>Logout</button>
+                
             </div>
 
             <h1>Detail Transaksi</h1>

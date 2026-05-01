@@ -263,6 +263,7 @@ export default function Admin() {
               <div key={item.menu_id} className="menu-item">
                 <img src={item.gambar} width="80" alt={item.nama_menu} />
                 <h3>{item.nama_menu}</h3>
+                <p>Stok: {item.stok}</p>
                 <p>Rp {Number(item.harga).toLocaleString("id-ID")}</p>
                 <div className="item-actions">
                   <button onClick={() => handleEdit(item)}>Edit</button>
