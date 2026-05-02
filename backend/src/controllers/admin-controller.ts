@@ -88,6 +88,8 @@ export const loginAdmin = async (req: Request, res: Response): Promise<void> => 
 };
 
 export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+  console.log("==== ADA YANG MENEKAN TOMBOL FORGOT PASSWORD ===="); // <-- Tambahkan ini
+
   try {
     const { email } = req.body;
     const admin = await Admin.findOne({ where: { email } });
